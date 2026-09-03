@@ -2,7 +2,7 @@
 import type { Kysely } from "kysely";
 import type { DB } from "../../infrastructure/schema.js";
 import type { RecordRepository, CreateRecordInput } from "../../modules/record/record.repository.js";
-import type { Record } from "../../modules/record/record.js";
+import type { Record, RecordStatus } from "../../modules/record/record.js";
 import { randomUUID } from "node:crypto";
 
 export class SqliteRecordRepository implements RecordRepository {
@@ -39,8 +39,29 @@ export class SqliteRecordRepository implements RecordRepository {
     return rows.map((r) => this.toEntity(r));
   }
 
-  async updateStatus(id: string, status: string): Promise<void> {
+  async findProcessableByUserId(userId: string, opts: { statuses: RecordStatus[]; limit: number }): Promise<Record[]> {
+    const rows = await this.db
+      .selectFrom("records")
+      .selectAll()
+      .where("user_id", "=", userId)
+      .where("status", "in", opts.statuses)
+      .orderBy("occurred_at", "asc")
+      .limit(opts.limit)
+      .execute();
+    return rows.map((r) => this.toEntity(r));
+  }
+
+  async updateStatus(id: string, status: RecordStatus): Promise<void> {
     await this.db.updateTable("records").set({ status, updated_at: new Date().toISOString() }).where("id", "=", id).execute();
+  }
+
+  async updateManyStatus(ids: string[], status: RecordStatus): Promise<void> {
+    if (ids.length === 0) return;
+    await this.db
+      .updateTable("records")
+      .set({ status, updated_at: new Date().toISOString() })
+      .where("id", "in", ids)
+      .execute();
   }
 
   private toEntity(row: any): Record {

@@ -13,6 +13,10 @@ export interface AppConfig {
   port: number;
   host: string;
   organizerCron: string;
+  embeddingApiKey: string | null;
+  embeddingApiBase: string;
+  embeddingModel: string;
+  embeddingDimension: number;
 }
 
 export function loadEnv(path = ".env") {
@@ -43,5 +47,9 @@ export function loadConfig(): AppConfig {
     port: parseInt(process.env.PORT ?? "3000", 10),
     host: process.env.HOST ?? "0.0.0.0",
     organizerCron: process.env.ORGANIZER_TRIGGER_CRON ?? "*/5 * * * *",
+    embeddingApiKey: process.env.EMBEDDING_API_KEY || process.env.OPENAI_API_KEY || null,
+    embeddingApiBase: process.env.EMBEDDING_API_BASE ?? process.env.OPENAI_API_BASE ?? "https://api.openai.com/v1",
+    embeddingModel: process.env.EMBEDDING_MODEL ?? "text-embedding-v2",
+    embeddingDimension: parseInt(process.env.EMBEDDING_DIMENSION ?? "1536", 10),
   };
 }

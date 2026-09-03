@@ -7,5 +7,6 @@ export interface TopicRepository {
   findByUserId(userId: string, opts: { cursor?: string; limit: number }): Promise<Topic[]>;
   update(id: string, patch: Partial<Pick<Topic, "title" | "summary" | "bodyMarkdown" | "tags" | "matchText" | "needsOrganize" | "status">>): Promise<void>;
   linkRecord(recordId: string, topicId: string, relation?: string): Promise<void>;
+  countTopicsByRecordId(recordId: string): Promise<number>;
   findTopicsByRecordId(recordId: string): Promise<Array<{ id: string; title: string }>>;
 }

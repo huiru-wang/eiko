@@ -13,6 +13,8 @@ import { createAgentRuntime } from "./agent/runtime.js";
 import { SqliteRecordRepository } from "./infrastructure/repositories/sqlite-record.repository.js";
 import { SqliteTopicRepository } from "./infrastructure/repositories/sqlite-topic.repository.js";
 import { SqliteMessageRepository } from "./infrastructure/repositories/sqlite-message.repository.js";
+import { SqliteTaskRepository } from "./infrastructure/repositories/sqlite-task.repository.js";
+import { SqliteVecVectorStore } from "./infrastructure/vector-store.js";
 import { Scheduler } from "./scheduler/scheduler.js";
 import { createOrganizerTrigger } from "./scheduler/organizer-trigger.js";
 
@@ -40,6 +42,8 @@ if (!existingUser) {
 const recordRepo = new SqliteRecordRepository(db);
 const topicRepo = new SqliteTopicRepository(db);
 const messageRepo = new SqliteMessageRepository(db);
+const taskRepo = new SqliteTaskRepository(db);
+const vectorStore = new SqliteVecVectorStore(db, config);
 
 // ─── 4. 创建 SessionManager ──────────────────────────────────────
 const sessionManager = new SessionManager((opts) => createAgentRuntime(opts));
@@ -51,6 +55,8 @@ const app = createApp({
   recordRepo,
   topicRepo,
   messageRepo,
+  taskRepo,
+  vectorStore,
 });
 
 // ─── 6. 启动调度器 ────────────────────────────────────────────────

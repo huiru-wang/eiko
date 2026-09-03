@@ -66,6 +66,20 @@ export interface MessagesTable {
   timestamp: number;
 }
 
+// ─── tasks ──────────────────────────────────────────────────────
+
+export interface TasksTable {
+  id: string;
+  user_id: string;
+  type: string;
+  status: string;
+  input: string | null;
+  result: string | null;
+  error: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 // ─── DB ─────────────────────────────────────────────────────────
 
 export interface DB {
@@ -74,6 +88,7 @@ export interface DB {
   topics: TopicsTable;
   record_topics: RecordTopicsTable;
   messages: MessagesTable;
+  tasks: TasksTable;
 }
 
 export type User = Selectable<UsersTable>;
@@ -92,3 +107,6 @@ export type NewRecordTopic = Insertable<RecordTopicsTable>;
 
 export type Message = Selectable<MessagesTable>;
 export type NewMessage = Insertable<MessagesTable>;
+
+export type Task = Selectable<TasksTable>;
+export type NewTask = Insertable<TasksTable>;

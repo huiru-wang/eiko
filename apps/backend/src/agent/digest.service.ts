@@ -5,7 +5,7 @@
  * 1. 获取 userId 下所有 pending Records + 所有 Topics
  * 2. 构造 Agent，注入 topic_tools + record-digest prompt
  * 3. Agent 自主通过工具读取/创建/更新 Topic
- * 4. 完成后将 Records 标记为 digested
+ * 4. 完成后将 Records 标记为 organized
  */
 
 import { Agent } from "@earendil-works/pi-agent-core";
@@ -104,9 +104,9 @@ export async function runDigest(opts: DigestOptions): Promise<DigestResult> {
       }
     }
 
-    // 7. 标记 records 为 digested
+    // 7. 标记 records 为 organized
     for (const record of pending) {
-      await recordRepo.updateStatus(record.id, "digested");
+      await recordRepo.updateStatus(record.id, "organized");
     }
 
     return {

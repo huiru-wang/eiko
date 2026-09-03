@@ -55,12 +55,34 @@ export class SqliteTopicRepository implements TopicRepository {
   }
 
   async linkRecord(recordId: string, topicId: string, relation = "primary"): Promise<void> {
+    const existing = await this.db
+      .selectFrom("record_topics")
+      .select(["record_id", "topic_id"])
+      .where("record_id", "=", recordId)
+      .where("topic_id", "=", topicId)
+      .executeTakeFirst();
+    if (existing) return;
+
+    const count = await this.countTopicsByRecordId(recordId);
+    if (count >= 2) {
+      throw new Error(`Record "${recordId}" already has ${count} linked topics.`);
+    }
+
     await this.db.insertInto("record_topics").values({
       record_id: recordId,
       topic_id: topicId,
       relation,
       created_at: new Date().toISOString(),
     }).execute();
+  }
+
+  async countTopicsByRecordId(recordId: string): Promise<number> {
+    const row = await this.db
+      .selectFrom("record_topics")
+      .select(({ fn }) => fn.countAll<number>().as("count"))
+      .where("record_id", "=", recordId)
+      .executeTakeFirst();
+    return Number(row?.count ?? 0);
   }
 
   async findTopicsByRecordId(recordId: string): Promise<Array<{ id: string; title: string }>> {

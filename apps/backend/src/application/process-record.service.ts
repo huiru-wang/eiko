@@ -18,5 +18,5 @@ export async function processRecord(
   // 2. 让 Agent 判断：link / create / skip
   // 3. 执行相应操作
 
-  await recordRepo.updateStatus(recordId, "digested");
+  await recordRepo.updateStatus(recordId, "organized");
 }

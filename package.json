@@ -8,7 +8,8 @@
     "dev:frontend": "pnpm --filter @eiko/frontend dev:weapp",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
-    "db:migrate": "pnpm --filter @eiko/backend db:migrate"
+    "db:migrate": "pnpm --filter @eiko/backend db:migrate",
+    "vector:rebuild": "pnpm --filter @eiko/backend vector:rebuild"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

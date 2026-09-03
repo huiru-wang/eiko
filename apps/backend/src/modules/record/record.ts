@@ -1,5 +1,5 @@
 /** Record 实体 */
-export type RecordStatus = "pending" | "processing" | "digested";
+export type RecordStatus = "pending" | "processing" | "organized" | "skipped" | "updated";
 
 export interface Record {
   id: string;

@@ -3,6 +3,7 @@
  */
 
 import Database from "better-sqlite3";
+import * as sqliteVec from "sqlite-vec";
 import { Kysely, SqliteDialect, Migrator, type MigrationProvider, type Migration } from "kysely";
 import { readdir } from "node:fs/promises";
 import { resolve } from "node:path";
@@ -14,6 +15,15 @@ export function createDatabase(sqlitePath: string): Kysely<DB> {
 
   db.pragma("journal_mode = WAL");
   db.pragma("busy_timeout = 5000");
+
+  try {
+    sqliteVec.load(db);
+    const version = db.prepare("select vec_version() as version").get() as { version: string };
+    console.log(`[database] sqlite-vec loaded: ${version.version}`);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "unknown error";
+    console.warn(`[database] sqlite-vec unavailable: ${message}`);
+  }
 
   return new Kysely<DB>({
     dialect: new SqliteDialect({ database: db }),

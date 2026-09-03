@@ -2,13 +2,15 @@
 import { Hono } from "hono";
 import { z } from "zod";
 import type { RecordRepository } from "../modules/record/record.repository.js";
+import type { VectorStore } from "../infrastructure/vector-store.js";
+import { logInfo, logWarn } from "../infrastructure/logger.js";
 
 const CreateRecordSchema = z.object({
   content: z.string().min(1),
   source: z.string().optional(),
 });
 
-export function createRecordRoutes(recordRepo: RecordRepository): Hono {
+export function createRecordRoutes(recordRepo: RecordRepository, vectorStore?: VectorStore): Hono {
   const app = new Hono();
 
   // POST /api/records — 创建 Record
@@ -21,6 +23,13 @@ export function createRecordRoutes(recordRepo: RecordRepository): Hono {
     const userId = c.req.header("x-user-id") ?? "default-user";
 
     const record = await recordRepo.create({ userId, ...parsed.data });
+    logInfo("records", "record created", { recordId: record.id, userId, contentLength: record.content.length });
+    if (vectorStore) {
+      void vectorStore.upsertRecord(record).catch((err) => {
+        const message = err instanceof Error ? err.message : "Unknown error";
+        logWarn("records", "upsert record vector failed", { recordId: record.id, userId, error: message });
+      });
+    }
     return c.json({ result: record, success: true, errorCode: null, errorMsg: null });
   });
 
