@@ -16,14 +16,11 @@ MVP 使用以下技术栈：
 | 页面状态 | Zustand |
 | 服务端数据 | TanStack Query 或轻量 Query 封装 |
 | 普通请求 | Taro.request / wx.request |
-| Agent 流式输出 | `wx.request({ enableChunked: true })` + NDJSON Parser |
-| 文件上传 | Taro.uploadFile / wx.uploadFile |
-| 录音 | RecorderManager |
+| Agent 流式输出 | SSE（Server-Sent Events）|
 | Markdown | MDAST 子集解析 + 自定义 Taro Renderer |
-| 图片/音视频 | 小程序原生 Image、Video、Audio Context |
-| 本地存储 | 未发送草稿、上传恢复信息、轻量页面缓存 |
+| 本地存储 | 未发送草稿、轻量页面缓存 |
 
-前端只面向后端业务 ID，不保存 OSS Path，不把临时 OSS 签名地址写回 Topic Markdown。
+前端只面向后端业务接口，不直接访问存储服务。
 
 ---
 
@@ -53,16 +50,14 @@ flowchart TD
 
 Inbox 保持极简：
 
-- 页面中央是语音主按钮。
-- 支持长录音和关键时刻标记。
-- 页面底部保留快速文字输入。
+- 页面中央是快速文字输入区域。
 - 提交成功后，Record 立即进入 Timeline。
 - 后台是否已整理不影响用户继续捕获。
 
 | 页面区域 | 内容 |
 |---|---|
 | 顶部 | `Inbox` 与当天日期 |
-| 中央 | “有什么值得留下？”、圆形录音按钮、录音状态 |
+| 中央 | “有什么值得留下？”、文字输入区 |
 | 底部输入区 | 快速文字输入与发送按钮 |
 | 底部导航 | Inbox、记录、话题 |
 
@@ -72,8 +67,6 @@ Inbox 保持极简：
 
 - 按发生时间倒序。
 - 完整保留原始文字。
-- 音频记录展示时长和转写文本。
-- 图片、音频、视频作为附件展示。
 - 展示简单整理状态：`整理中 / 已整理`。
 - 展示关联的一个或多个 Topic。
 
@@ -113,8 +106,6 @@ Inbox 保持极简：
 
 - 从底部弹出高度约 88% 的 Sheet；
 - 支持文字输入；
-- 支持语音 ASR；
-- ASR 结果先放入输入框，用户可以编辑；
 - 用户手动点击发送后才创建 Message；
 - Agent 回复采用流式渲染；
 - 对话本身不直接写入 Record；
@@ -134,14 +125,9 @@ flowchart TD
 
     QUERY --> API["HTTP Client"]
     QUERY --> STREAM["Agent Stream Client"]
-    QUERY --> UPLOAD["Upload Client"]
-
-    MD --> ASSET["Attachment Resolver"]
-    ASSET --> API
 
     API --> WX["WeChat Network APIs"]
     STREAM --> WX
-    UPLOAD --> WX
     STORE --> LOCAL["Local Storage"]
 ```
 
@@ -153,11 +139,9 @@ flowchart TD
 | Features | 捕获、Record、Topic、Chat 等业务交互 |
 | Shared UI | 按钮、输入框、Sheet、Toast、空状态 |
 | Query Services | 获取和刷新服务端数据 |
-| Local Stores | 录音、输入草稿、Sheet、上传队列等本地状态 |
+| Local Stores | 输入草稿、Sheet 等本地状态 |
 | Agent Stream Client | 解析 HTTP Chunk，输出统一事件 |
 | Markdown Renderer | 将 Markdown AST 渲染成小程序组件 |
-| Attachment Resolver | 将稳定 Attachment ID 换成当前可访问 URL |
-| Upload Client | 上传附件并获得 Attachment ID |
 
 ---
 
@@ -171,9 +155,7 @@ flowchart TD
 type RecordView = {
   id: string
   text: string
-  attachments: AttachmentView[]
-  digestStatus: 'pending' | 'processing' | 'digested'
-  topicIds: string[]
+  status: 'pending' | 'processing' | 'digested'
   topics: Array<{ id: string; title: string }>
   occurredAt: string
 }
@@ -207,23 +189,6 @@ type MessageView = {
 }
 ```
 
-### 4.4 AttachmentView
-
-```ts
-type AttachmentView = {
-  id: string
-  fileName: string
-  mimeType: string
-  mediaType: 'image' | 'audio' | 'video' | 'file'
-  url?: string
-  durationMs?: number
-  width?: number
-  height?: number
-}
-```
-
-`url` 是后端返回的短期渲染地址，只存在于当前页面状态中。
-
 ---
 
 ## 5. 关键交互链路
@@ -244,50 +209,23 @@ sequenceDiagram
     UI-->>U: 展示已留下
 ```
 
-提交后立即形成 Record。AI 后台整理只更新 `digestStatus` 和 Topic 关联，不影响原始记录展示。
+提交后立即形成 Record。AI 后台整理只更新 `status` 和 Topic 关联，不影响原始记录展示。
 
-### 5.2 录音捕获
-
-```mermaid
-sequenceDiagram
-    actor U as 用户
-    participant UI as Voice Capture
-    participant WX as RecorderManager
-    participant UP as Upload Client
-    participant API as Backend
-
-    U->>UI: 开始录音
-    UI->>WX: start
-    U->>UI: 标记关键时刻
-    U->>UI: 停止录音
-    UI->>WX: stop
-    WX-->>UI: 临时文件
-    UI->>UP: 上传文件
-    UP-->>UI: attachmentId
-    UI->>API: 创建带音频附件的 Record
-    API-->>UI: Record
-```
-
-Record 的 `text` 在音频转写前可以是空字符串，转写完成后刷新为 ASR 文本。
-
-### 5.3 打开 Topic
+### 5.2 打开 Topic
 
 ```mermaid
 sequenceDiagram
     participant UI as Topic Detail
     participant API as Query Service
     participant MD as Markdown Renderer
-    participant AR as Attachment Resolver
 
     UI->>API: 获取 Topic 详情
-    API-->>UI: Topic + Related Records + attachmentMap
+    API-->>UI: Topic + Related Records
     UI->>MD: bodyMarkdown
-    MD->>AR: 解析 Markdown 中的 Attachment ID
-    AR-->>MD: 当前短时 URL
-    MD-->>UI: Image / Audio / Video 组件树
+    MD-->>UI: 组件树
 ```
 
-### 5.4 Topic 对话
+### 5.3 Topic 对话
 
 ```mermaid
 sequenceDiagram
@@ -305,88 +243,27 @@ sequenceDiagram
     API-->>SHEET: Topic needsOrganize 可能变更
 ```
 
-### 5.5 Topic 语音输入
+### 5.4 对话语音输入（MVP 后）
 
-```text
-开始录音
-→ 停止录音
-→ 上传临时音频
-→ 后端 ASR
-→ 文本写入输入框
-→ 用户编辑
-→ 用户手动发送
-→ 创建 Message
-```
-
-ASR 完成但未发送的文本属于前端草稿，不属于 Message、Record 或 Topic。
+对话 Sheet 中的语音 ASR 输入属于 P1 能力，MVP 仅支持文字输入。
 
 ---
 
-## 6. Markdown 与附件渲染
+## 6. Markdown 渲染
 
-### 6.1 Topic 中保存的稳定格式
+### 6.1 渲染范围
 
-```markdown
-![白板照片](/api/attachments/att_01.jpg)
+MVP 阶段的 Markdown Renderer 支持以下子集：
 
-[audio:会议录音](/api/attachments/att_02.mp3)
+- 标题、段落、列表、引用和表格；
+- 普通外部参考链接。
 
-[video:演示片段](/api/attachments/att_03.mp4)
-```
+附件渲染（图片、音频、视频）属于 P1 能力，MVP 不涉及。
 
-Markdown 中保存 Attachment ID，不保存 OSS Path，也不保存会过期的签名 URL。
-
-### 6.2 渲染流程
-
-Topic 详情接口返回：
-
-```ts
-type TopicDetailResponse = {
-  topic: TopicView
-  attachmentMap: Record<string, string>
-}
-```
-
-示例：
-
-```json
-{
-  "attachmentMap": {
-    "att_01": "https://temporary-signed-url-1",
-    "att_02": "https://temporary-signed-url-2"
-  }
-}
-```
-
-前端解析 `/api/attachments/att_01.jpg`，取出 `att_01`，从 `attachmentMap` 获取当前 URL。
-
-如果 Topic 停留时间超过签名有效期，播放或加载失败时只刷新 Attachment Map，不重新请求整个 Topic。
-
-### 6.3 自定义节点
-
-```tsx
-function MarkdownLink({ href, children }) {
-  const text = getPlainText(children);
-  const src = attachmentResolver.resolve(href);
-
-  if (text.startsWith('audio:')) {
-    return <AudioNode src={src} title={text.slice(6)} />;
-  }
-
-  if (text.startsWith('video:')) {
-    return <VideoNode src={src} title={text.slice(6)} />;
-  }
-
-  return <SafeLink href={href}>{children}</SafeLink>;
-}
-```
-
-限制：
+### 6.2 限制
 
 - 不执行 Markdown 中的 HTML 和 JavaScript。
 - 外部链接必须经过协议检查。
-- 未解析到的 Attachment 显示可恢复占位符。
-- Image、Audio、Video 使用小程序原生组件。
 
 ---
 
@@ -408,7 +285,7 @@ Stream Client 负责：
 
 - ArrayBuffer 解码；
 - 跨 Chunk 半行拼接；
-- NDJSON/SSE 事件解析；
+- SSE 事件解析；
 - 页面取消时中断请求；
 - 将完整 AI Message 写入 Query Cache；
 - 流结束后刷新 Message History 和 Topic 状态。
@@ -423,18 +300,15 @@ Stream Client 负责：
 
 - Record 列表；
 - Topic 列表和详情；
-- Message History；
-- Attachment Map。
+- Message History。
 
 ### 8.2 本地交互状态
 
 通过 Zustand 管理：
 
 - Inbox 文字草稿；
-- 当前录音时间和 Marker；
 - Topic Sheet 开合；
 - 对话输入草稿；
-- ASR 中间状态；
 - 当前流式文本；
 - Toast 和临时动画。
 
@@ -443,11 +317,9 @@ Stream Client 负责：
 仅持久化：
 
 - 未发送文字；
-- 未上传完成的录音临时信息；
-- 未发送的 ASR 文本；
 - 最近打开的 Topic ID。
 
-不在本地长期保存完整 Topic、完整 Message History 或 OSS 签名 URL。
+不在本地长期保存完整 Topic 或完整 Message History。
 
 ---
 
@@ -460,12 +332,12 @@ Stream Client 负责：
 | canvas | `#e9ebe8` | 外层预览背景 |
 | paper | `#f7f7f4` | 页面主背景 |
 | surface | `#ffffff` | 输入框、局部容器 |
-| ink | `#20231f` | 主文字、录音按钮 |
+| ink | `#20231f` | 主文字 |
 | body | `#4d534c` | 正文 |
 | muted | `#757b73` | 次级说明 |
 | faint | `#a4a9a2` | 时间和弱状态 |
 | divider | `#e0e3dd` | 分割线 |
-| accent | `#315f50` | 关联、录音、状态 |
+| accent | `#315f50` | 关联、状态 |
 | accent-soft | `#e7efeb` | 柔和强调背景 |
 | warm | `#8a6733` | 思考提示 |
 | warm-soft | `#f3ede2` | 温暖提示背景 |
@@ -477,8 +349,6 @@ Stream Client 负责：
 | 页面切换 | 180ms，透明度 + 12px 水平位移 |
 | Chat Sheet | 240ms，从底部进入，高度约 88% |
 | 遮罩 | 200ms，`rgba(25,29,25,.24)` |
-| 录音按压 | 160ms，缩放至 0.95 |
-| 波形 | 1100ms，错峰循环 |
 | Toast | 200ms，12px 位移 + 透明度 |
 
 ### 9.3 小程序适配
@@ -486,7 +356,6 @@ Stream Client 负责：
 - 使用 `rpx` 建立布局尺寸，设计基准仍按当前 390–410px Demo。
 - 底部导航、对话输入框处理 Safe Area。
 - 真机减少大面积 `backdrop-filter`，用半透明纯色替代。
-- 波形节点数量保持有限，避免低端 Android 设备掉帧。
 - Sheet 采用 transform 动画，不使用频繁改变高度的布局动画。
 
 ---
@@ -516,9 +385,7 @@ frontend/
 │   │   └── topic-detail/
 │   ├── features/
 │   │   ├── capture/
-│   │   │   ├── VoiceCapture.tsx
 │   │   │   ├── QuickTextComposer.tsx
-│   │   │   ├── RecordingWaveform.tsx
 │   │   │   └── capture.store.ts
 │   │   ├── record/
 │   │   │   ├── RecordList.tsx
@@ -533,11 +400,7 @@ frontend/
 │   │       └── ChatComposer.tsx
 │   ├── components/
 │   │   ├── markdown/
-│   │   │   ├── MarkdownRenderer.tsx
-│   │   │   ├── AttachmentResolver.ts
-│   │   │   ├── AudioNode.tsx
-│   │   │   ├── VideoNode.tsx
-│   │   │   └── ImageNode.tsx
+│   │   │   └── MarkdownRenderer.tsx
 │   │   └── ui/
 │   │       ├── BottomSheet.tsx
 │   │       ├── IconButton.tsx
@@ -545,7 +408,6 @@ frontend/
 │   ├── services/
 │   │   ├── api-client.ts
 │   │   ├── agent-stream-client.ts
-│   │   ├── upload-client.ts
 │   │   └── query-keys.ts
 │   ├── stores/
 │   │   ├── auth.store.ts
@@ -572,8 +434,6 @@ flowchart LR
     C --> D["Topic 列表与详情"]
     D --> E["Markdown Renderer"]
     E --> F["Conversation Sheet\nChunk Stream"]
-    F --> G["录音、上传与 ASR"]
-    G --> H["图片、音频、视频节点"]
 ```
 
 首个前端闭环：文字捕获 → Timeline → Topic → 打开详情 → 发一轮对话 → 查看流式回复。

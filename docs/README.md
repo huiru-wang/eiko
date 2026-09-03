@@ -40,11 +40,11 @@ MVP 优先以微信小程序验证，保留三个主页面和一个详情交互�
 
 | 页面 | 作用 | P0 能力 |
 |---|---|---|
-| Inbox | 极简捕获入口 | 快速文字、语音录制、关键时刻标记 |
-| 记录 | 用户原始输入 Timeline | 原文、附件、整理状态、关联 Topic |
+| Inbox | 极简捕获入口 | 快速文字输入 |
+| 记录 | 用户原始输入 Timeline | 原文、整理状态、关联 Topic |
 | 话题 | AI 形成的长期思考方向 | 标题、直接结论、摘要、更新时间 |
 | 话题详情 | 阅读与继续思考 | 相关记忆、Markdown 正文、底部对话入口 |
-| 对话 Sheet | 围绕 Topic 继续沟通 | 文字、ASR 后手动发送、流式 AI 回复 |
+| 对话 Sheet | 围绕 Topic 继续沟通 | 文字输入、流式 AI 回复 |
 
 MVP 暂不包含：
 
@@ -61,7 +61,7 @@ MVP 暂不包含：
 
 ```mermaid
 flowchart TD
-    A["用户随手输入文字或语音"] --> B["生成 Record"]
+    A["用户随手输入文字"] --> B["生成 Record"]
     B --> C["AI 消化 Record"]
     C --> D{"判断去向"}
     D -->|推进已有方向| E["关联已有 Topic"]
@@ -78,8 +78,7 @@ flowchart TD
 
 Inbox 必须保持纯粹：
 
-- 页面中央是语音主按钮；
-- 页面底部是快速文字输入；
+- 页面中央是快速文字输入区域；
 - 不出现分类、标签和复杂快捷操作；
 - 用户提交后立即生成 Record；
 - AI 是否已经处理，不影响继续记录。
@@ -89,9 +88,8 @@ Inbox 必须保持纯粹：
 Record 是用户真实留下的一次表达：
 
 - `content` 保存文本；
-- `attachmentIds` 保存图片、音频、视频等附件；
 - `topicIds` 表示关联的零到多个 Topic；
-- `digestStatus` 表示后台是否已经理解和处理。
+- `status` 表示后台是否已经理解和处理。
 
 Timeline 只展示 Record，不混入 AI 对话消息。
 
@@ -107,7 +105,7 @@ Topic 页面首先提供：
 - 决策辅助；
 - 必要的情绪理解和安抚。
 
-Topic 正文使用 Markdown，可逐步扩展图片、音频、视频和普通外部链接。
+Topic 正文使用 Markdown。
 
 ### 相关记忆
 
@@ -125,9 +123,7 @@ Topic 详情顶部展示关联 Records：
 点击 Topic 底部输入入口后，从底部弹出对话 Sheet：
 
 - 用户可以补充想法、提出问题或纠正 AI；
-- 支持普通文字；
-- 支持录音转文字；
-- ASR 结果必须由用户确认并手动发送；
+- 支持普通文字输入；
 - AI 回复流式展示；
 - 对话产生的新理解通过 TopicAction 等待下一次整理。
 
@@ -139,10 +135,8 @@ MVP 只保留两个核心领域和三个支撑对象。
 erDiagram
     USER ||--o{ RECORD : creates
     USER ||--o{ TOPIC : owns
-    USER ||--o{ ATTACHMENT : uploads
     RECORD }o--o{ TOPIC : relates
     TOPIC ||--o{ MESSAGE : contains
-    RECORD ||--o{ ATTACHMENT : references
 ```
 
 ### Record
@@ -154,10 +148,9 @@ type Record = {
 
   source: 'home'
   content: string
-  attachmentIds: string[]
   topicIds: string[]
 
-  digestStatus: 'pending' | 'processing' | 'digested'
+  status: 'pending' | 'processing' | 'digested'
   digestResult?: RecordDigestResult
   digestVersion?: string
 
@@ -170,7 +163,7 @@ type Record = {
 设计约束：
 
 - P0 的 `source` 固定为 `home`；
-- `content` 必须存在，但录音转写完成前允许为空字符串；
+- `content` 必须存在且非空；
 - Record 最多自动关联两个 Topic；
 - `digested` 表示 AI 已经判断过，不表示一定属于某个 Topic；
 - `digestResult` 保存模型的完整判断和理由，便于后续优化。
@@ -239,29 +232,6 @@ type Message = {
 ```
 
 `payload` 保存完整 Pi 消息 JSON，不再拆分 content、toolCalls、usage 等字段。
-
-### Attachment
-
-```ts
-type Attachment = {
-  id: string
-  userId: string
-
-  ossPath: string
-  fileName: string
-  extension: string
-  mimeType: string
-  size: number
-
-  mediaType: 'image' | 'audio' | 'video' | 'file'
-  durationMs?: number
-  width?: number
-  height?: number
-
-  status: 'uploading' | 'ready' | 'deleted'
-  createdAt: string
-}
-```
 
 ## Record 自动消化
 
@@ -382,36 +352,6 @@ flowchart LR
 5. 只清理本次已消费的 Action IDs；
 6. 仍有新 Action 时继续保持 `needsOrganize=true`。
 
-## 附件与 Markdown
-
-文件存储在私有阿里云 OSS Bucket 中。Topic Markdown 永久保存 Attachment ID，不保存 OSS Path 或 OSS 签名 URL。
-
-```markdown
-![白板照片](/api/attachments/att_01.jpg)
-
-[audio:会议录音](/api/attachments/att_02.mp3)
-
-[video:演示片段](/api/attachments/att_03.mp4)
-```
-
-读取 Topic 时：
-
-```mermaid
-flowchart LR
-    MD["Topic Markdown"] --> ID["提取 Attachment IDs"]
-    ID --> DB["查询 OSS Paths"]
-    DB --> SIGN["生成短时签名 URLs"]
-    SIGN --> MAP["返回 Attachment Map"]
-    MAP --> UI["小程序组件渲染"]
-```
-
-保留 Attachment ID 的原因：
-
-- OSS 签名 URL 会过期，不能成为持久 Markdown 内容；
-- OSS Path 暴露存储结构，迁移 Bucket 或目录后会破坏正文；
-- Attachment ID 可以验证文件归属并替换底层存储；
-- 签名 URL 只存在于一次页面渲染期间。
-
 ## 系统架构
 
 ```mermaid
@@ -419,7 +359,7 @@ flowchart TB
     MP["微信小程序\nTaro + React"]
 
     subgraph BACKEND["Backend Process"]
-        HTTP["Fastify HTTP Server"]
+        HTTP["Hono HTTP Server"]
         APP["Application Services"]
         SESSION["Session Runner"]
         AGENT["Agent Runtime\npi-agent-core"]
@@ -428,10 +368,9 @@ flowchart TB
     end
 
     DB[("SQLite")]
-    OSS[("阿里云 OSS")]
-    MODEL["LLM / ASR Provider"]
+    MODEL["LLM Provider"]
 
-    MP -->|HTTP / Chunk Stream| HTTP
+    MP -->|HTTP / SSE Stream| HTTP
     HTTP --> APP
     TRIGGER --> APP
     APP --> SESSION
@@ -439,31 +378,24 @@ flowchart TB
     APP --> REPO
     AGENT --> REPO
     REPO --> DB
-    HTTP --> OSS
     AGENT --> MODEL
 ```
 
 ### Agent Runtime
 
-HTTP Server 与 Agent Runtime 在同一 Node.js 进程中。每次调用临时构造 Agent：
+HTTP Server 与 Agent Runtime 在同一 Node.js 进程中。采用 SessionManager 管理 per-thread 的 AgentRuntime：
 
 ```ts
-const context = await contextBuilder.build({
-  userId,
-  sessionId,
-  topicId,
-});
-
-const agent = agentFactory.create(context);
-await agent.prompt(message);
+const thread = await sessionManager.getOrCreate(userId, sessionId, opts);
+await thread.runtime.agent.prompt(message);
+await thread.runtime.agent.waitForIdle();
 ```
 
-- `userId + sessionId` 构成逻辑 Workspace；
-- 不为用户启动独立进程；
-- 不保留长期存活的 Agent 实例；
-- Message、Record、Topic 是可恢复状态；
-- 同一 Workspace 的 Agent 执行通过 Session Runner 串行化；
-- 不同 Workspace 可以并行执行。
+- `userId:sessionId` 构成 WorkspaceKey；
+- SessionManager 持有 per-thread 的 AgentRuntime（agent + cleanup）；
+- 同 Workspace 的 Agent 执行通过 SessionManager 串行化；
+- 不同 Workspace 可以并行执行；
+- Agent 事件通过 subscribe() 自动持久化到 SQLite messages 表。
 
 ### Organizer Trigger
 
@@ -484,9 +416,7 @@ await agent.prompt(message);
 | 样式 | SCSS Modules + Design Tokens |
 | 状态 | Zustand |
 | 服务端查询 | TanStack Query 或轻量 Query 封装 |
-| Agent Stream | `wx.request(enableChunked)` + NDJSON Parser |
-| 录音 | RecorderManager |
-| 上传 | wx.uploadFile |
+| Agent Stream | SSE（Server-Sent Events）|
 | Markdown | MDAST 子集 + 自定义 Taro Renderer |
 
 ### 后端
@@ -494,16 +424,16 @@ await agent.prompt(message);
 | 能力 | 技术 |
 |---|---|
 | 运行时 | Node.js LTS + TypeScript |
-| HTTP | Fastify |
-| Schema | TypeBox |
+| HTTP | Hono + @hono/node-server |
+| Schema | Zod |
 | Agent | `@earendil-works/pi-agent-core` |
 | 多模型 | `@earendil-works/pi-ai` |
 | 数据访问 | Kysely Repository Adapter |
 | 数据库 | better-sqlite3 + WAL |
-| 调度 | node-cron 或轻量进程内 Scheduler |
-| 文件 | 阿里云 OSS Node SDK |
-| 日志 | Pino |
-| 测试 | Vitest + Fastify inject |
+| 调度 | 轻量进程内 Scheduler |
+| 开发运行 | tsx |
+| 日志 | console |
+| 测试 | Vitest |
 
 ## UI 视觉规范
 
@@ -521,7 +451,7 @@ await agent.prompt(message);
 | muted | `#757b73` | 次级说明 |
 | faint | `#a4a9a2` | 时间和弱状态 |
 | divider | `#e0e3dd` | 分割线 |
-| accent | `#315f50` | 关联、录音和状态 |
+| accent | `#315f50` | 关联和状态 |
 | accent-soft | `#e7efeb` | 柔和强调背景 |
 | warm | `#8a6733` | 思考提示 |
 | warm-soft | `#f3ede2` | 温暖提示背景 |
@@ -533,51 +463,59 @@ await agent.prompt(message);
 | 页面切换 | 180ms，透明度 + 12px 水平位移 |
 | Chat Sheet | 240ms，从底部进入，高度约 88% |
 | 遮罩 | 200ms，`rgba(25,29,25,.24)` |
-| 录音按压 | 160ms，缩放至 0.95 |
-| 录音波形 | 1100ms，错峰循环 |
 | Toast | 200ms，12px 位移 + 透明度 |
 
 ## 项目目录
 
-项目不使用 Monorepo，前后端分别维护依赖和锁文件。
+项目使用 pnpm workspaces Monorepo，统一依赖和锁文件。
 
 ```text
-.
-├── AGENTS.md
-├── README.md
-├── backend/
-├── data/
-├── docs/
-├── frontend/
-├── logs/
-└── scripts/
+eiko/
+├── apps/
+│   ├── backend/              # Hono + pi-agent-core 后端
+│   └── frontend/             # Taro + React 前端
+├── packages/
+│   └── shared/               # 共享类型定义
+├── data/                     # SQLite 数据库
+├── docs/                     # 架构文档
+├── plan/                     # 任务计划
+└── scripts/                  # 辅助脚本
 ```
 
 目标目录：
 
 ```text
-backend/
+apps/backend/
 ├── src/
-│   ├── http/                  # Fastify routes、middleware、stream
-│   ├── application/           # 用例编排
+│   ├── main.ts               # 入口
+│   ├── env.ts                # 配置加载
+│   ├── server.ts             # Hono App
+│   ├── routes/               # API 路由
+│   ├── application/          # 用例编排
 │   ├── modules/
-│   │   ├── record/
-│   │   ├── topic/
-│   │   ├── message/
-│   │   └── attachment/
-│   ├── agent/                 # Runtime、Context、Prompts、Tools
-│   ├── scheduler/             # Organizer Trigger
-│   └── infrastructure/        # SQLite、OSS、ASR、日志
-├── tests/
+│   │   ├── record/           # Record 实体 + 仓库端口
+│   │   ├── topic/            # Topic 实体 + 仓库端口
+│   │   └── message/          # Message 实体 + 仓库端口
+│   ├── agent/                # Runtime、Session、Prompts、Tools
+│   ├── scheduler/            # Organizer Trigger
+│   └── infrastructure/       # SQLite、Migrations、Repositories
 ├── package.json
-└── pnpm-lock.yaml
+└── tsconfig.json
+
+packages/shared/
+├── src/
+│   ├── api/                  # ApiResponse、PaginatedResult
+│   ├── models/               # RecordView、TopicView、MessageView
+│   └── constants.ts
+├── package.json
+└── tsconfig.json
 
 frontend/
 ├── src/
 │   ├── pages/                 # Inbox、Records、Topics、Topic Detail
 │   ├── features/              # Capture、Record、Topic、Chat
 │   ├── components/            # UI 与 Markdown Renderer
-│   ├── services/              # API、Stream、Upload
+│   ├── services/              # API、Stream
 │   ├── stores/                # 草稿与交互状态
 │   └── theme/                 # 色彩、动效、间距、字号
 ├── tests/
@@ -634,21 +572,11 @@ NODE_ENV=development
 PORT=3000
 SQLITE_PATH=../data/app.sqlite
 
-OSS_REGION=
-OSS_BUCKET=
-OSS_ACCESS_KEY_ID=
-OSS_ACCESS_KEY_SECRET=
-
 MODEL_PROVIDER=
 MODEL_NAME=
 MODEL_API_KEY=
 
-ASR_PROVIDER=
-ASR_MODEL=
-ASR_API_KEY=
-
 ORGANIZER_TRIGGER_CRON=
-ATTACHMENT_SIGNED_URL_TTL_SECONDS=
 ```
 
 生产环境通过密钥管理服务注入敏感配置，不提交 `.env`。
@@ -672,8 +600,6 @@ flowchart LR
     C --> D["Topic 列表与详情"]
     D --> E["Topic 对话与流式输出"]
     E --> F["TopicAction 自动整理"]
-    F --> G["录音、OSS 与 ASR"]
-    G --> H["图片、音频、视频渲染"]
 ```
 
 首个完整闭环：
@@ -695,15 +621,13 @@ flowchart LR
 
 - 微信登录和用户身份；
 - Inbox 快速文字输入；
-- 录音和 ASR；
 - Record Timeline；
 - Record Digest；
 - Topic 自动创建和关联；
 - Topic Markdown；
 - 顶部相关记忆；
 - Topic 多轮对话；
-- TopicAction 自动整理；
-- OSS 附件和图片、音频、视频渲染。
+- TopicAction 自动整理。
 
 ### P1：体验增强
 
@@ -712,7 +636,6 @@ flowchart LR
 - PC/Web 快速捕获入口；
 - 分享到小程序入口；
 - Topic 版本历史；
-- 更稳定的录音保留策略；
 - Topic 超过规模阈值后的候选召回层。
 
 ### P2：Agent 扩展
@@ -727,13 +650,9 @@ flowchart LR
 ## 数据与隐私
 
 - 用户原始 Record 不被 AI 内容覆盖；
-- OSS Bucket 使用私有访问；
-- Topic Markdown 不保存签名 URL；
-- 附件访问必须验证 userId；
-- 对话 ASR 临时音频按产品策略清理；
-- 模型和 OSS 密钥只保存在服务端；
-- 日志默认不记录完整用户正文和录音内容；
-- 删除能力需要同时处理 SQLite 数据和 OSS 文件。
+- 模型密钥只保存在服务端；
+- 日志默认不记录完整用户正文；
+- 删除能力需要处理 SQLite 中的相关数据。
 
 ## 当前状态
 
