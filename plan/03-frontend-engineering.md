@@ -1,7 +1,7 @@
 # Task 3: 前端工程（复刻交互 Demo）
 
 > 依赖：[01-monorepo-init.md](./01-monorepo-init.md)
-> 参考：`docs/product-interactive-demo.html`（完整交互原型）
+> 参考：`docs/frontend/product-interactive-demo.html`（完整交互原型）
 > 架构：`docs/frontend-architecture.md`
 
 ## 目标
@@ -10,7 +10,7 @@
 
 ## 复刻原则
 
-交互 Demo（`docs/product-interactive-demo.html`）是前端实现的唯一视觉基准：
+交互 Demo（`docs/frontend/product-interactive-demo.html`）是前端实现的唯一视觉基准：
 
 - **色彩**：严格使用 Demo 中的 CSS 变量（--bg, --paper, --ink, --body, --muted, --faint, --line, --accent, --accent-soft, --warm, --warm-soft）
 - **动效**：页面切换 180ms 透明度+位移、Sheet 240ms 从底部、Toast 200ms、录音按压 160ms、波形 1100ms

@@ -1,0 +1,30 @@
+{
+  "name": "@eiko/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/main.ts",
+    "typecheck": "tsc --noEmit",
+    "db:migrate": "tsx src/infrastructure/migrate.ts",
+    "vector:rebuild": "tsx ../../scripts/rebuild-vector-index.ts"
+  },
+  "dependencies": {
+    "@earendil-works/pi-agent-core": "^0.84.2",
+    "@earendil-works/pi-ai": "^0.84.2",
+    "@eiko/shared": "workspace:*",
+    "@hono/node-server": "^2.1.1",
+    "better-sqlite3": "^11.9.1",
+    "hono": "^4.13.5",
+    "kysely": "^0.27.6",
+    "sqlite-vec": "^0.1.9",
+    "typebox": "^1.3.25",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/node": "^22.15.0",
+    "tsx": "^4.23.12",
+    "typescript": "^5.8.3"
+  }
+}

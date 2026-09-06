@@ -1,10 +1,10 @@
 export type TopicView = {
+  extData: { [key: string]: unknown } | null;
   id: string;
   title: string;
   summary: string;
-  bodyMarkdown: string;
-  needsOrganize: boolean;
-  relatedRecords: Array<{ id: string; text: string; occurredAt: string }>;
+  content: string;
+  relatedRecords: Array<{ id: string; text: string; createdAt: string }>;
   sessionId: string;
   updatedAt: string;
 };

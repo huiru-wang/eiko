@@ -3,13 +3,16 @@
   "private": true,
   "packageManager": "pnpm@10.11.0",
   "scripts": {
-    "dev": "pnpm --filter @eiko/backend start",
-    "dev:backend": "pnpm --filter @eiko/backend start",
-    "dev:frontend": "pnpm --filter @eiko/frontend dev:weapp",
+    "dev": "pnpm --filter @eiko/server start",
+    "dev:server": "pnpm --filter @eiko/server start",
+    "dev:backend": "pnpm --filter @eiko/server start",
+    "dev:frontend": "pnpm dev:h5",
+    "dev:h5": "pnpm --filter @eiko/h5 dev",
+    "build:h5": "pnpm --filter @eiko/h5 build",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
-    "db:migrate": "pnpm --filter @eiko/backend db:migrate",
-    "vector:rebuild": "pnpm --filter @eiko/backend vector:rebuild"
+    "db:migrate": "pnpm --filter @eiko/server db:migrate",
+    "vector:rebuild": "pnpm --filter @eiko/server vector:rebuild"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

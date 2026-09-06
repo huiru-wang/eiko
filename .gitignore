@@ -12,3 +12,6 @@ logs/
 workspaces/
 *.tsbuildinfo
 .DS_Store
+.swc/
+test-results/
+playwright-report/

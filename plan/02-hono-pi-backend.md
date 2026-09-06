@@ -5,16 +5,16 @@
 
 ## 目标
 
-在 `apps/backend/` 中创建完整的 Hono + pi-agent-core 后端工程骨架，并同步更新架构文档。
+在 `apps/server/` 中创建完整的 Hono + pi-agent-core 后端工程骨架，并同步更新架构文档。
 
 ## 步骤
 
 ### 2.1 包配置
 
-**`apps/backend/package.json`**
+**`apps/server/package.json`**
 ```jsonc
 {
-  "name": "@eiko/backend",
+  "name": "@eiko/server",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -42,9 +42,9 @@
 }
 ```
 
-**`apps/backend/tsconfig.json`** -- extends base, `module: Node16`, `moduleResolution: Node16`
+**`apps/server/tsconfig.json`** -- extends base, `module: Node16`, `moduleResolution: Node16`
 
-**`apps/backend/.env.example`** -- PROVIDER, MODEL, SQLITE_PATH, PORT, HOST, ORGANIZER_TRIGGER_CRON
+**`apps/server/.env.example`** -- PROVIDER, MODEL, SQLITE_PATH, PORT, HOST, ORGANIZER_TRIGGER_CRON
 
 ### 2.2 核心入口
 
@@ -98,7 +98,7 @@
 
 ### 2.9 更新架构文档
 
-**`docs/backend-architecture.md`** -- 大量修改：
+**`docs/server/architecture.md`** -- 大量修改：
 - 方案定稿和技术栈：Fastify → Hono, TypeBox → Zod, Pino → console
 - 流式协议：NDJSON chunked → SSE（pi 原生 AgentEvent）
 - Agent Runtime：pi-agent-core Agent + subscribe() 模式

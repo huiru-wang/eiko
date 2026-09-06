@@ -1,8 +1,8 @@
-import { loadConfig, loadEnv } from "../apps/backend/src/env.js";
-import { createDatabase, runMigrations } from "../apps/backend/src/infrastructure/database.js";
-import { SqliteRecordRepository } from "../apps/backend/src/infrastructure/repositories/sqlite-record.repository.js";
-import { SqliteTopicRepository } from "../apps/backend/src/infrastructure/repositories/sqlite-topic.repository.js";
-import { SqliteVecVectorStore } from "../apps/backend/src/infrastructure/vector-store.js";
+import { loadConfig, loadEnv } from "../apps/server/src/env.js";
+import { createDatabase, runMigrations } from "../apps/server/src/infrastructure/database.js";
+import { SqliteRecordRepository } from "../apps/server/src/infrastructure/repositories/sqlite-record.repository.js";
+import { SqliteTopicRepository } from "../apps/server/src/infrastructure/repositories/sqlite-topic.repository.js";
+import { SqliteVecVectorStore } from "../apps/server/src/infrastructure/vector-store.js";
 
 loadEnv();
 const config = loadConfig();

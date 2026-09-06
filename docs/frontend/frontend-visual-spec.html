@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Eiko 跨端视觉规格</title>
+  <style>
+    :root { --paper:#f7f7f4; --surface:#fff; --ink:#20231f; --body:#4d534c; --muted:#757b73; --line:#e0e3dd; --accent:#315f50; --accent-soft:#e7efeb; --warm-soft:#f3ede2; --summary:#eef4f0; --summary-line:#dce7e0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif; color:var(--ink); background:#e9ebe8; }
+    * { box-sizing:border-box; } body { margin:0; padding:40px 24px; } h1,h2,h3,p { margin:0; } h1 { font-size:28px; } h2 { margin:40px 0 14px; font-size:18px; } .intro { max-width:800px; color:var(--body); line-height:1.7; } .tokens,.screens { display:flex; flex-wrap:wrap; gap:18px; } .token { width:116px; color:var(--body); font-size:12px; line-height:1.5; } .swatch { height:42px; border:1px solid var(--line); border-radius:6px; margin-bottom:7px; } .phone { width:390px; min-height:760px; overflow:hidden; background:var(--paper); box-shadow:0 24px 70px rgba(24,29,25,.14); position:relative; } .page { padding:30px 24px 86px; } .page-head { min-height:112px; } .page-head h3 { font-size:28px; line-height:1.3; } .page-head p { margin-top:8px; color:var(--muted); font-size:13px; } .record { padding:18px 0; border-bottom:1px solid var(--line); } .record-content { font-size:15px; line-height:1.65; } .meta { display:flex; flex-wrap:wrap; align-items:center; gap:7px; margin-top:10px; color:var(--muted); font-size:11px; } .status,.topic { padding:3px 7px; border-radius:4px; } .status { background:var(--warm-soft); color:#806432; } .topic { background:var(--accent-soft); color:var(--accent); } .topic-card { padding:14px 16px; border:1px solid var(--summary-line); border-radius:8px; background:var(--summary); color:var(--body); font-size:15px; line-height:1.7; } .related-label { display:flex; justify-content:space-between; margin:8px 0 0; padding:14px 0; color:var(--muted); font-size:13px; } .related { height:170px; overflow:hidden; } .related-row { border-left:2px solid var(--line); padding:11px 0 11px 14px; margin-bottom:14px; } .related-row time { display:block; color:var(--muted); font-size:11px; margin-bottom:6px; } .related-row p { color:var(--body); font-size:13px; line-height:1.65; } .latest { margin:24px 0; padding-left:14px; border-left:2px solid #b3c6bb; color:var(--body); font-size:13px; line-height:1.6; } .latest small { color:var(--accent); } .markdown { margin-top:28px; color:var(--body); line-height:1.85; } .markdown h3 { color:var(--ink); font-size:23px; margin-bottom:20px; } .nav { position:absolute; bottom:0; left:0; right:0; display:grid; grid-template-columns:repeat(3,1fr); padding:8px 12px 12px; border-top:1px solid var(--line); background:rgba(247,247,244,.97); } .nav span { text-align:center; color:#a4a9a2; font-size:11px; } .nav span.active { color:var(--ink); } @media (max-width:460px) { body { padding:20px 0; } .phone { width:100%; box-shadow:none; } h1,.intro,h2,.tokens { margin-left:20px; margin-right:20px; } }
+  </style>
+</head>
+<body>
+  <h1>Eiko 跨端视觉规格</h1>
+  <p class="intro">纸白底、深墨文字、低饱和绿色作为连接与确认。页面不依赖厚卡片、强阴影或装饰性动效。</p>
+  <h2>颜色</h2>
+  <section class="tokens" aria-label="颜色令牌">
+    <div class="token"><div class="swatch" style="background:#f7f7f4"></div>页面纸色<br>#F7F7F4</div>
+    <div class="token"><div class="swatch" style="background:#20231f"></div>主文字<br>#20231F</div>
+    <div class="token"><div class="swatch" style="background:#315f50"></div>品牌绿色<br>#315F50</div>
+    <div class="token"><div class="swatch" style="background:#e7efeb"></div>Topic 浅绿<br>#E7EFEB</div>
+    <div class="token"><div class="swatch" style="background:#f3ede2"></div>状态暖色<br>#F3EDE2</div>
+    <div class="token"><div class="swatch" style="background:#eef4f0"></div>摘要卡片<br>#EEF4F0</div>
+  </section>
+  <h2>回声详情参考</h2>
+  <section class="screens">
+    <article class="phone" aria-label="回声详情页面示例">
+      <main class="page">
+        <header class="page-head"><h3>AI 协作与可靠工作流</h3><p>更新于 9月5日 15:05　#AI Coding　#工作流</p></header>
+        <p class="topic-card">持续沉淀让 AI 协作更稳定、可验证的方法。</p>
+        <div class="related-label"><span>相关原始记录</span><span>⌃</span></div>
+        <section class="related">
+          <article class="related-row"><time>9月5日 15:00</time><p>先写清楚输入和输出，再让 Agent 修改复杂接口。</p></article>
+          <article class="related-row"><time>9月4日 10:12</time><p>先用真实样例定义验收，再考虑自动化执行。</p></article>
+          <article class="related-row"><time>9月3日 16:40</time><p>模型出错时，应该保留完整上下文以便排查。</p></article>
+        </section>
+        <section class="latest"><small>最近变化</small><p>补充了接口验收方法。</p></section>
+        <article class="markdown"><h3>核心判断</h3><p>清晰的输入输出和验收标准能减少执行偏差。先定义可验证的结果，再让自动化承担具体执行。</p></article>
+      </main>
+      <nav class="nav" aria-label="底部导航"><span>⌁<br>捕获</span><span>◇<br>记录</span><span class="active">▥<br>回声</span></nav>
+    </article>
+  </section>
+</body>
+</html>

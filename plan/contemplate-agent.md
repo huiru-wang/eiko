@@ -192,7 +192,7 @@ CREATE VIRTUAL TABLE vec_records USING vec0(
   record_id TEXT PRIMARY KEY,
   user_id TEXT PARTITION KEY,
   embedding FLOAT[1536],
-  occurred_at TEXT,
+  created_at TEXT,
   +embedding_text TEXT
 );
 ```
@@ -201,7 +201,7 @@ CREATE VIRTUAL TABLE vec_records USING vec0(
 
 | 维度 | Topic 向量 | Record 向量 |
 |---|---|---|
-| embedding 文本 | `title + summary + tags + matchText + 少量正文` | 用户原始 `content` |
+| embedding 文本 | `title + summary + tags + content 摘要` | 用户原始 `content` |
 | 生命周期 | Topic 创建和整理后更新 | Record 创建后基本不变 |
 | 搜索入口 | 新 Record 找相似 Topic | Topic / 对话找相关原始记忆 |
 | 返回 ID | `topicId` | `recordId` |
@@ -251,7 +251,7 @@ ORDER BY distance;
 export interface VectorStore {
   // 写入/更新
   upsertRecord(record: { id: string; content: string; userId: string }): Promise<void>;
-  upsertTopic(topic: { id: string; title: string; summary: string; tags: string[]; matchText: string; bodyMarkdown: string; userId: string }): Promise<void>;
+  upsertTopic(topic: { id: string; title: string; summary: string; tags: string[]; content: string; userId: string }): Promise<void>;
   // 删除
   deleteRecord(id: string): Promise<void>;
   deleteTopic(id: string): Promise<void>;
@@ -329,8 +329,8 @@ MVP 实现策略：
 | `rag_search` | `scope: "record" \| "topic"`, `query: string` | 匹配结果列表（recordId/topicId + 摘要） | 语义搜索，通过 sqlite-vec 向量检索 |
 | `get_topic` | `topicId: string` | Topic 完整详情 JSON | 即现有 `read_topic`，改名 |
 | `get_record` | `recordId: string` | Record 完整内容 JSON | 新增 |
-| `create_topic` | `title, summary, tags, bodyMarkdown, matchText?` | 新建 Topic JSON | 现有，增加 vectorStore 同步 |
-| `update_topic` | `topicId, title?, summary?, tags?, bodyMarkdown?, matchText?` | 更新后 Topic JSON | 现有，增加 vectorStore 同步 |
+| `create_topic` | `title, summary, tags, content` | 新建 Topic JSON | 现有，增加 vectorStore 同步 |
+| `update_topic` | `topicId, title?, summary?, tags?, content?` | 更新后 Topic JSON | 现有，增加 vectorStore 同步 |
 | `link_record_topic` | `recordId, topicId, relation?` | 确认信息 | 新增，写入 RecordTopic 关系表 |
 | `update_task` | `status, result?` | 确认信息 | 新增，写入 task 表 |
 
@@ -690,7 +690,7 @@ sqlite-vec 不需要单独启动服务，随后端进程加载。
 本地开发只需要：
 
 ```bash
-cd apps/backend
+cd apps/server
 pnpm db:migrate
 pnpm start
 ```

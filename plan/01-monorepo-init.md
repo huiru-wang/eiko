@@ -1,7 +1,7 @@
 # Task 1: Monorepo 项目初始化
 
 > 依赖：无
-> 后续：[02-hono-pi-backend.md](./02-hono-pi-backend.md) | [03-frontend-engineering.md](./03-frontend-engineering.md)
+> 后续：[02-hono-pi-backend.md](./02-hono-pi-backend.md) | [前端设计](../docs/frontend/design.md)
 
 ## 目标
 
@@ -27,8 +27,8 @@ packages:
   "private": true,
   "packageManager": "pnpm@10.11.0",
   "scripts": {
-    "dev:backend": "pnpm --filter @eiko/backend start",
-    "dev:frontend": "pnpm --filter @eiko/frontend dev:weapp",
+    "dev:server": "pnpm --filter @eiko/server start",
+    "dev:frontend": "pnpm --filter @eiko/h5 dev",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test"
   }
@@ -202,20 +202,20 @@ export const TOPIC_STATUS = { ACTIVE: 'active', ARCHIVED: 'archived' } as const;
 
 ### 1.3 创建前后端空目录骨架
 
-**`apps/backend/`** -- 仅创建目录结构和占位 package.json：
+**`apps/server/`** -- 仅创建目录结构和占位 package.json：
 ```text
-apps/backend/
-├── package.json       # name: @eiko/backend（仅 name + version + private）
+apps/server/
+├── package.json       # name: @eiko/server（仅 name + version + private）
 ├── tsconfig.json      # extends base
 └── src/               # 空目录
 ```
 
-**`apps/frontend/`** -- 仅创建目录结构和占位 package.json：
+**`apps/h5/`** -- 独立 H5 工程：
 ```text
-apps/frontend/
-├── package.json       # name: @eiko/frontend（仅 name + version + private）
+apps/h5/
+├── package.json       # name: @eiko/h5
 ├── tsconfig.json      # extends base
-└── src/               # 空目录
+└── src/
 ```
 
 ### 1.4 创建辅助目录
