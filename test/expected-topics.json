@@ -29,15 +29,15 @@
       ]
     },
     {
-      "expectedTitle": "Eiko 的碎片沉淀机制",
+      "expectedTitle": "Fanto 的碎片沉淀机制",
       "acceptedTitleVariants": [
         "碎片记录产品的长期话题沉淀机制",
-        "Eiko 如何让碎片记录自然形成长期话题",
+        "Fanto 如何让碎片记录自然形成长期话题",
         "碎片记录工具的 Topic 生长机制"
       ],
       "mustIncludeCaseIds": [
-        "eiko-product-001",
-        "eiko-product-002"
+        "fanto-product-001",
+        "fanto-product-002"
       ],
       "expectedFacets": [
         "产品重点不是分类，而是降低整理负担",
@@ -65,8 +65,8 @@
       "ai-agent-002",
       "ai-agent-003",
       "ai-agent-004",
-      "eiko-product-001",
-      "eiko-product-002"
+      "fanto-product-001",
+      "fanto-product-002"
     ],
     "skipped": []
   }

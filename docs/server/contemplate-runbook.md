@@ -22,8 +22,8 @@ Claim → Load Context → Plan → Validate → Execute → Rewrite → Finaliz
 建议使用独立测试数据库，避免污染本地开发数据。
 
 ```bash
-cd /Users/wanghuiru/Workspace/side-project/eiko
-export SQLITE_PATH=/private/tmp/eiko-contemplate-test.sqlite
+cd /Users/wanghuiru/Workspace/side-project/fanto
+export SQLITE_PATH=/private/tmp/fanto-contemplate-test.sqlite
 pnpm install
 pnpm db:migrate
 ```
@@ -50,20 +50,20 @@ EMBEDDING_DIMENSION=1536
 ## 2. 启动服务并观察日志
 
 ```bash
-SQLITE_PATH=/private/tmp/eiko-contemplate-test.sqlite pnpm dev
+SQLITE_PATH=/private/tmp/fanto-contemplate-test.sqlite pnpm dev
 ```
 
 建议过滤关键日志：
 
 ```bash
-SQLITE_PATH=/private/tmp/eiko-contemplate-test.sqlite pnpm dev | rg 'contemplate-v2|vector-store|records|database|main'
+SQLITE_PATH=/private/tmp/fanto-contemplate-test.sqlite pnpm dev | rg 'contemplate-v2|vector-store|records|database|main'
 ```
 
 启动期望日志：
 
 ```text
 [database] sqlite-vec loaded: v0.1.9
-[main] Database initialized: /private/tmp/eiko-contemplate-test.sqlite
+[main] Database initialized: /private/tmp/fanto-contemplate-test.sqlite
 [main] Migrations completed
 [main] Server listening on http://0.0.0.0:3000
 ```
@@ -124,8 +124,8 @@ ai-agent-001 true <record-id> pending
 ai-agent-002 true <record-id> pending
 ai-agent-003 true <record-id> pending
 ai-agent-004 true <record-id> pending
-eiko-product-001 true <record-id> pending
-eiko-product-002 true <record-id> pending
+fanto-product-001 true <record-id> pending
+fanto-product-002 true <record-id> pending
 ```
 
 服务端期望日志：
@@ -353,13 +353,13 @@ AI Native 工程师的能力与 Agent 协作实践
 理想 Topic B：
 
 ```text
-Eiko 的碎片沉淀机制
+Fanto 的碎片沉淀机制
 ```
 
 应覆盖：
 
-- `eiko-product-001`
-- `eiko-product-002`
+- `fanto-product-001`
+- `fanto-product-002`
 
 正文应包含这些 Facet：
 
@@ -373,7 +373,7 @@ Eiko 的碎片沉淀机制
 查看关联关系：
 
 ```bash
-sqlite3 /private/tmp/eiko-contemplate-test.sqlite \
+sqlite3 /private/tmp/fanto-contemplate-test.sqlite \
   "select r.content, t.title, rt.relation from record_topics rt join records r on r.id = rt.record_id join topics t on t.id = rt.topic_id order by r.created_at;"
 ```
 
@@ -381,13 +381,13 @@ sqlite3 /private/tmp/eiko-contemplate-test.sqlite \
 
 - 6 条 Record 都有关联 Topic；
 - 前 4 条 AI/Agent/工程能力相关 Record 关联到同一个 Topic；
-- 后 2 条 Eiko 产品机制相关 Record 关联到同一个 Topic；
+- 后 2 条 Fanto 产品机制相关 Record 关联到同一个 Topic；
 - 每条 Record 自动关联不超过 2 个 Topic。
 
 ## 9. 验收 Record 状态
 
 ```bash
-sqlite3 /private/tmp/eiko-contemplate-test.sqlite \
+sqlite3 /private/tmp/fanto-contemplate-test.sqlite \
   "select status, count(*) from records group by status;"
 ```
 
@@ -472,22 +472,22 @@ skipped|N
 
 - 收紧 Rewrite Prompt；
 - 要求按 Facet 输出；
-- 要求明确“用户判断 / Eiko 理解 / 待验证问题”。
+- 要求明确“用户判断 / Fanto 理解 / 待验证问题”。
 
 ## 11. 重跑测试
 
 重建测试库最干净：
 
 ```bash
-rm -f /private/tmp/eiko-contemplate-test.sqlite /private/tmp/eiko-contemplate-test.sqlite-shm /private/tmp/eiko-contemplate-test.sqlite-wal
-export SQLITE_PATH=/private/tmp/eiko-contemplate-test.sqlite
+rm -f /private/tmp/fanto-contemplate-test.sqlite /private/tmp/fanto-contemplate-test.sqlite-shm /private/tmp/fanto-contemplate-test.sqlite-wal
+export SQLITE_PATH=/private/tmp/fanto-contemplate-test.sqlite
 pnpm db:migrate
 ```
 
 也可以只把 Records 改回待处理：
 
 ```bash
-sqlite3 /private/tmp/eiko-contemplate-test.sqlite \
+sqlite3 /private/tmp/fanto-contemplate-test.sqlite \
   "update records set status='updated';"
 ```
 

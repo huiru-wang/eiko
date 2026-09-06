@@ -14,7 +14,7 @@
 **`apps/server/package.json`**
 ```jsonc
 {
-  "name": "@eiko/server",
+  "name": "@fanto/server",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -24,7 +24,7 @@
     "db:migrate": "tsx src/infrastructure/migrate.ts"
   },
   "dependencies": {
-    "@eiko/shared": "workspace:*",
+    "@fanto/shared": "workspace:*",
     "hono": "^4.x",
     "@hono/node-server": "^2.x",
     "@earendil-works/pi-agent-core": "^0.84.x",

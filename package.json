@@ -1,18 +1,18 @@
 {
-  "name": "eiko",
+  "name": "fanto",
   "private": true,
   "packageManager": "pnpm@10.11.0",
   "scripts": {
-    "dev": "pnpm --filter @eiko/server start",
-    "dev:server": "pnpm --filter @eiko/server start",
-    "dev:backend": "pnpm --filter @eiko/server start",
+    "dev": "pnpm --filter @fanto/server start",
+    "dev:server": "pnpm --filter @fanto/server start",
+    "dev:backend": "pnpm --filter @fanto/server start",
     "dev:frontend": "pnpm dev:h5",
-    "dev:h5": "pnpm --filter @eiko/h5 dev",
-    "build:h5": "pnpm --filter @eiko/h5 build",
+    "dev:h5": "pnpm --filter @fanto/h5 dev",
+    "build:h5": "pnpm --filter @fanto/h5 build",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
-    "db:migrate": "pnpm --filter @eiko/server db:migrate",
-    "vector:rebuild": "pnpm --filter @eiko/server vector:rebuild"
+    "db:migrate": "pnpm --filter @fanto/server db:migrate",
+    "vector:rebuild": "pnpm --filter @fanto/server vector:rebuild"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

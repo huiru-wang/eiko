@@ -1,4 +1,4 @@
-import type { RecordReadDto } from '@eiko/shared';
+import type { RecordReadDto } from '@fanto/shared';
 import { ArrowUpRight } from 'lucide-react';
 import { formatTime, organization, statusLabels } from '../lib/model';
 import { go } from './layout';

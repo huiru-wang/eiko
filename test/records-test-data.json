@@ -16,11 +16,11 @@
     "content": "在 AI 原生时代，工程师的核心竞争力正在从写代码转向定义问题、设计可靠工作流、驾驭 AI 协同决策。"
   },
   {
-    "caseId": "eiko-product-001",
+    "caseId": "fanto-product-001",
     "content": "做碎片记录工具时，最重要的不是分类，而是让用户不用整理也能持续沉淀出长期话题。"
   },
   {
-    "caseId": "eiko-product-002",
+    "caseId": "fanto-product-002",
     "content": "AI 整理记录时应该保守合并，错误合并比暂时不合并更糟；但也不能每条有意义的记录都新建 Topic，否则会 topic 爆炸。"
   }
 ]

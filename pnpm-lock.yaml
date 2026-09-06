@@ -10,7 +10,7 @@ importers:
 
   apps/frontend:
     dependencies:
-      '@eiko/shared':
+      '@fanto/shared':
         specifier: workspace:*
         version: link:../../packages/shared
       '@tanstack/react-query':
@@ -104,7 +104,7 @@ importers:
 
   apps/h5:
     dependencies:
-      '@eiko/shared':
+      '@fanto/shared':
         specifier: workspace:*
         version: link:../../packages/shared
       '@tanstack/react-query':
@@ -165,7 +165,7 @@ importers:
       '@earendil-works/pi-ai':
         specifier: ^0.84.2
         version: 0.84.4(ws@8.21.3)(zod@3.25.76)
-      '@eiko/shared':
+      '@fanto/shared':
         specifier: workspace:*
         version: link:../../packages/shared
       '@hono/node-server':

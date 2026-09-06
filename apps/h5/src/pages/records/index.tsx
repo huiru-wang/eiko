@@ -1,4 +1,4 @@
-import type { RecordReadDto } from '@eiko/shared';
+import type { RecordReadDto } from '@fanto/shared';
 import { Layout, ErrorNotice, Loading, More, go } from '../../components/layout';
 import { RecordRow } from '../../components/records';
 import { useList } from '../../lib/api';

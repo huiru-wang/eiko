@@ -1,5 +1,5 @@
 {
-  "name": "@eiko/server",
+  "name": "@fanto/server",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -12,7 +12,7 @@
   "dependencies": {
     "@earendil-works/pi-agent-core": "^0.84.2",
     "@earendil-works/pi-ai": "^0.84.2",
-    "@eiko/shared": "workspace:*",
+    "@fanto/shared": "workspace:*",
     "@hono/node-server": "^2.1.1",
     "better-sqlite3": "^11.9.1",
     "hono": "^4.13.5",

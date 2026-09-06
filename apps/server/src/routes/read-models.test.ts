@@ -7,7 +7,7 @@ import { SqliteMessageRepository } from "../infrastructure/repositories/sqlite-m
 import { createRecordRoutes } from "./records.js";
 import { createTopicRoutes } from "./topics.js";
 import { createMessageRoutes } from "./messages.js";
-import type { RecordReadDto } from "@eiko/shared";
+import type { RecordReadDto } from "@fanto/shared";
 
 test("record read model batches links, includes archive status and isolates detail", async () => {
   const db = createDatabase(":memory:");

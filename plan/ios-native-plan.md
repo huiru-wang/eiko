@@ -1,4 +1,4 @@
-# Eiko 原生 iOS 工程方案
+# Fanto 原生 iOS 工程方案
 
 ## 目标与范围
 
@@ -22,7 +22,7 @@
 
 ```mermaid
 flowchart TD
-    App[EikoApp] --> Root[RootTabView]
+    App[FantoApp] --> Root[RootTabView]
     Root --> Capture[Capture Feature]
     Root --> Records[Records Feature]
     Root --> Topics[Topics Feature]
@@ -30,7 +30,7 @@ flowchart TD
     Records --> API
     Topics --> API
     API --> Contract[DTO / HTTP Contract]
-    API --> Server[Eiko Server HTTPS API]
+    API --> Server[Fanto Server HTTPS API]
     App --> Draft[DraftStore]
     Draft --> Local[AppStorage / file]
     Topics --> Markdown[Sanitized Markdown Renderer]
@@ -40,10 +40,10 @@ flowchart TD
 
 ```text
 apps/ios/
-├── Eiko.xcodeproj/
-├── Eiko/
+├── Fanto.xcodeproj/
+├── Fanto/
 │   ├── App/
-│   │   ├── EikoApp.swift
+│   │   ├── FantoApp.swift
 │   │   ├── RootTabView.swift
 │   │   └── AppEnvironment.swift
 │   ├── Core/
@@ -53,8 +53,8 @@ apps/ios/
 │   │   │   ├── DTO/
 │   │   │   └── APIError.swift
 │   │   ├── DesignSystem/
-│   │   │   ├── EikoColor.swift
-│   │   │   ├── EikoTypography.swift
+│   │   │   ├── FantoColor.swift
+│   │   │   ├── FantoTypography.swift
 │   │   │   ├── Components/
 │   │   │   └── LiquidGlass.swift
 │   │   ├── Markdown/
@@ -80,11 +80,11 @@ apps/ios/
 │   │   ├── Localizable.xcstrings
 │   │   └── Config/
 │   └── Preview Content/
-├── EikoTests/
+├── FantoTests/
 │   ├── APIClientTests.swift
 │   ├── FeatureViewModelTests.swift
 │   └── Fixtures/
-├── EikoUITests/
+├── FantoUITests/
 │   ├── CaptureFlowTests.swift
 │   ├── RecordFlowTests.swift
 │   └── TopicFlowTests.swift
@@ -115,7 +115,7 @@ Apple 说明，使用 SwiftUI、UIKit 或 AppKit 的标准组件，界面会在�
 
 ### 是否适合使用 Liquid Glass
 
-**可以支持，但只用于系统导航与少量操作控件。** Eiko 的正文和摘要属于长阅读内容，当前的纸白、低饱和主题更有利于连续阅读；状态标签、Topic 标签、摘要卡片和 Markdown 正文不使用玻璃材质。
+**可以支持，但只用于系统导航与少量操作控件。** Fanto 的正文和摘要属于长阅读内容，当前的纸白、低饱和主题更有利于连续阅读；状态标签、Topic 标签、摘要卡片和 Markdown 正文不使用玻璃材质。
 
 建议如下：
 
@@ -124,7 +124,7 @@ Apple 说明，使用 SwiftUI、UIKit 或 AppKit 的标准组件，界面会在�
 - iOS 17–25：渲染等价的非玻璃组件，不复制折射、高光或动态形变。
 - 无障碍：在“降低透明度”“增加对比度”“减少动态效果”开启时，退回为不透明表面、静态过渡和清晰边线。
 
-这条路线能保留 Eiko 的视觉识别，同时让使用新系统的用户在底部导航、工具栏等系统区域感受到 Liquid Glass。Apple 也指出，使用旧版 Xcode 构建的应用在 iOS 26 上会保持原有 UI；因此 Liquid Glass 应作为可验证的 iOS 26+ 增强，而非上线前提。[WWDC25：Platforms State of the Union](https://developer.apple.com/videos/play/wwdc2025/102/?id=707)
+这条路线能保留 Fanto 的视觉识别，同时让使用新系统的用户在底部导航、工具栏等系统区域感受到 Liquid Glass。Apple 也指出，使用旧版 Xcode 构建的应用在 iOS 26 上会保持原有 UI；因此 Liquid Glass 应作为可验证的 iOS 26+ 增强，而非上线前提。[WWDC25：Platforms State of the Union](https://developer.apple.com/videos/play/wwdc2025/102/?id=707)
 
 ## UI 实现要点
 
@@ -138,7 +138,7 @@ Apple 说明，使用 SwiftUI、UIKit 或 AppKit 的标准组件，界面会在�
 
 ### 本地开发
 
-1. 在 macOS 上安装稳定版 Xcode，使用 Xcode 打开 `apps/ios/Eiko.xcodeproj`；先选择 iOS Simulator 的 iPhone 与 iPad 机型。
+1. 在 macOS 上安装稳定版 Xcode，使用 Xcode 打开 `apps/ios/Fanto.xcodeproj`；先选择 iOS Simulator 的 iPhone 与 iPad 机型。
 2. 通过 `Debug.xcconfig` 指向本机后端。模拟器可使用 `http://127.0.0.1:3000`；真机必须使用局域网可访问的开发地址，或 HTTPS 测试环境。开发期可为本地 HTTP 设置受控的 ATS 例外，Release 禁止该例外。
 3. 为 APIClient 和 ViewModel 编写单元测试；用 URLProtocol 或 Mock APIClient 隔离网络。UI 测试覆盖捕获、两行截断、编辑、分页、关联记录展开及 iOS 17 / iOS 26 的关键布局。
 4. 每次发布候选在真机测试动态字体、深浅模式策略、网络中断、安全区、VoiceOver、降低透明度和减少动态效果。

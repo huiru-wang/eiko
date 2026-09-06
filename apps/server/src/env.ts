@@ -36,7 +36,7 @@ export function loadEnv(path = ".env") {
 }
 
 export function loadConfig(): AppConfig {
-  const sqlitePath = resolve(process.env.SQLITE_PATH ?? "../../data/eiko.sqlite");
+  const sqlitePath = resolve(process.env.SQLITE_PATH ?? "../../data/fanto.sqlite");
   mkdirSync(dirname(sqlitePath), { recursive: true });
 
   return {

@@ -25,7 +25,7 @@
 **`apps/frontend/package.json`**
 ```jsonc
 {
-  "name": "@eiko/frontend",
+  "name": "@fanto/frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -34,7 +34,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@eiko/shared": "workspace:*",
+    "@fanto/shared": "workspace:*",
     "@tarojs/components": "4.x",
     "@tarojs/runtime": "4.x",
     "@tarojs/taro": "4.x",

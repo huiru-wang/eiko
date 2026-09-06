@@ -7,8 +7,8 @@
 先设置示例变量，后续示例在同一终端执行：
 
 ```bash
-EIKO_API='http://127.0.0.1:3000'
-EIKO_USER_ID='default-user'
+FANTO_API='http://127.0.0.1:3000'
+FANTO_USER_ID='default-user'
 TOPIC_ID='替换为查询得到的Topic ID'
 TASK_ID='替换为整理任务ID'
 ```
@@ -39,7 +39,7 @@ TASK_ID='替换为整理任务ID'
 ## GET /health
 
 ```bash
-curl --noproxy '*' --fail-with-body -sS "$EIKO_API/health"
+curl --noproxy '*' --fail-with-body -sS "$FANTO_API/health"
 ```
 
 返回 `{ "status": "ok", "timestamp": "..." }`，不调用模型或向量服务。
@@ -49,8 +49,8 @@ curl --noproxy '*' --fail-with-body -sS "$EIKO_API/health"
 content 为必填非空字符串，source 可选，默认 home（首页录入）。x-user-id 可选，默认 default-user。
 
 ```bash
-curl --noproxy '*' --fail-with-body -sS "$EIKO_API/api/records" \
-  -H "x-user-id: $EIKO_USER_ID" -H 'Content-Type: application/json' \
+curl --noproxy '*' --fail-with-body -sS "$FANTO_API/api/records" \
+  -H "x-user-id: $FANTO_USER_ID" -H 'Content-Type: application/json' \
   --data-raw '{"content":"修改复杂接口前，先列出验收样例。","source":"home"}'
 ```
 
@@ -61,8 +61,8 @@ result 是创建的 Record，包含 id、userId、source、content、status、cr
 records 为 1–100 项列表，每项包含 content 和可选 source。批量 content 去除首尾空白后不能为空。整批校验并原子写入，向量化异步顺序执行；重复提交会新增记录。
 
 ```bash
-curl --noproxy '*' --fail-with-body -sS "$EIKO_API/api/records/batch" \
-  -H "x-user-id: $EIKO_USER_ID" -H 'Content-Type: application/json' \
+curl --noproxy '*' --fail-with-body -sS "$FANTO_API/api/records/batch" \
+  -H "x-user-id: $FANTO_USER_ID" -H 'Content-Type: application/json' \
   --data-raw '{"records":[
     {"content":"修改前明确验收标准。","source":"home"},
     {"content":"整理后的观点应能回到原始记录。"}
@@ -86,15 +86,15 @@ result 为 `{ "data": [Record], "count": 2 }`，顺序与请求一致。空批�
 查询全部记录：
 
 ```bash
-curl --noproxy '*' --fail-with-body -sS --get "$EIKO_API/api/records" \
-  -H "x-user-id: $EIKO_USER_ID" --data-urlencode 'limit=20'
+curl --noproxy '*' --fail-with-body -sS --get "$FANTO_API/api/records" \
+  -H "x-user-id: $FANTO_USER_ID" --data-urlencode 'limit=20'
 ```
 
 查询 Topic 关联记录第一页：
 
 ```bash
-RECORD_PAGE=$(curl --noproxy '*' --fail-with-body -sS --get "$EIKO_API/api/records" \
-  -H "x-user-id: $EIKO_USER_ID" \
+RECORD_PAGE=$(curl --noproxy '*' --fail-with-body -sS --get "$FANTO_API/api/records" \
+  -H "x-user-id: $FANTO_USER_ID" \
   --data-urlencode "topicId=$TOPIC_ID" --data-urlencode 'limit=2')
 printf '%s\n' "$RECORD_PAGE" | jq
 ```
@@ -104,8 +104,8 @@ printf '%s\n' "$RECORD_PAGE" | jq
 ```bash
 RECORD_CURSOR=$(printf '%s' "$RECORD_PAGE" | jq -r '.result.nextCursor // empty')
 if [ -n "$RECORD_CURSOR" ]; then
-  curl --noproxy '*' --fail-with-body -sS --get "$EIKO_API/api/records" \
-    -H "x-user-id: $EIKO_USER_ID" --data-urlencode "topicId=$TOPIC_ID" \
+  curl --noproxy '*' --fail-with-body -sS --get "$FANTO_API/api/records" \
+    -H "x-user-id: $FANTO_USER_ID" --data-urlencode "topicId=$TOPIC_ID" \
     --data-urlencode 'limit=2' --data-urlencode "cursor=$RECORD_CURSOR"
 fi
 ```
@@ -118,8 +118,8 @@ result 包含 data、nextCursor、hasMore、pageSize、total。nextCursor 为不
 
 ```bash
 RECORD_ID='替换为记录ID'
-curl --noproxy '*' --fail-with-body -sS "$EIKO_API/api/records/$RECORD_ID" \
-  -H "x-user-id: $EIKO_USER_ID"
+curl --noproxy '*' --fail-with-body -sS "$FANTO_API/api/records/$RECORD_ID" \
+  -H "x-user-id: $FANTO_USER_ID"
 ```
 
 result 为完整 Record 加 topics，与列表项一致，包含 content、extData 和当前关联。不存在或其他用户记录返回 404/NOT_FOUND。不从整理任务或历史摘要反推归属。
@@ -130,8 +130,8 @@ result 为完整 Record 加 topics，与列表项一致，包含 content、extDa
 
 ```bash
 RECORD_ID='替换为记录ID'
-curl --noproxy '*' --fail-with-body -sS -X PATCH "$EIKO_API/api/records/$RECORD_ID" \
-  -H "x-user-id: $EIKO_USER_ID" -H 'Content-Type: application/json' \
+curl --noproxy '*' --fail-with-body -sS -X PATCH "$FANTO_API/api/records/$RECORD_ID" \
+  -H "x-user-id: $FANTO_USER_ID" -H 'Content-Type: application/json' \
   --data-raw '{"content":"修正：worktree 用来隔离变更，不能改善模型的指令遵循。"}'
 ```
 
@@ -167,16 +167,16 @@ Topic 的 extData.organization 为 `{ "taskId": "...", "organizedAt": "...", "su
 可选 limit（1–100 整数，默认 20）和 cursor，按 updatedAt、id 倒序。使用返回的不透明复合游标，仍兼容旧时间字符串。非法参数返回 400/INVALID_INPUT。
 
 ```bash
-TOPIC_PAGE=$(curl --noproxy '*' --fail-with-body -sS --get "$EIKO_API/api/topics" \
-  -H "x-user-id: $EIKO_USER_ID" --data-urlencode 'limit=20')
+TOPIC_PAGE=$(curl --noproxy '*' --fail-with-body -sS --get "$FANTO_API/api/topics" \
+  -H "x-user-id: $FANTO_USER_ID" --data-urlencode 'limit=20')
 printf '%s\n' "$TOPIC_PAGE" | jq
 ```
 
 ```bash
 TOPIC_CURSOR=$(printf '%s' "$TOPIC_PAGE" | jq -r '.result.nextCursor // empty')
 if [ -n "$TOPIC_CURSOR" ]; then
-  curl --noproxy '*' --fail-with-body -sS --get "$EIKO_API/api/topics" \
-    -H "x-user-id: $EIKO_USER_ID" --data-urlencode 'limit=20' \
+  curl --noproxy '*' --fail-with-body -sS --get "$FANTO_API/api/topics" \
+    -H "x-user-id: $FANTO_USER_ID" --data-urlencode 'limit=20' \
     --data-urlencode "cursor=$TOPIC_CURSOR"
 fi
 ```
@@ -186,8 +186,8 @@ result 为 data、nextCursor、hasMore、total、pageSize。total 固定为 0，
 ## GET /api/topics/:topicId
 
 ```bash
-curl --noproxy '*' --fail-with-body -sS "$EIKO_API/api/topics/$TOPIC_ID" \
-  -H "x-user-id: $EIKO_USER_ID"
+curl --noproxy '*' --fail-with-body -sS "$FANTO_API/api/topics/$TOPIC_ID" \
+  -H "x-user-id: $FANTO_USER_ID"
 ```
 
 result 是 Topic，包括 id、sessionId、title、summary、content、tags、status、extData 等；不存在或不属于当前用户返回 404/NOT_FOUND。允许读取自己的 archived 话题。响应不含 relatedRecords，关联记录使用 GET /api/records?topicId=...。
@@ -197,8 +197,8 @@ result 是 Topic，包括 id、sessionId、title、summary、content、tags、st
 topicId 必填，按消息 timestamp 升序返回全部历史，目前无游标。
 
 ```bash
-curl --noproxy '*' --fail-with-body -sS --get "$EIKO_API/api/messages" \
-  -H "x-user-id: $EIKO_USER_ID" --data-urlencode "topicId=$TOPIC_ID"
+curl --noproxy '*' --fail-with-body -sS --get "$FANTO_API/api/messages" \
+  -H "x-user-id: $FANTO_USER_ID" --data-urlencode "topicId=$TOPIC_ID"
 ```
 
 result 是原始事件 Message 数组；缺少 topicId 返回 400/MISSING_PARAM，Topic 不存在或不属于当前用户返回 404。查询限定当前用户及 Topic 当前 sessionId，按 timestamp、id 升序。role 为事件类型，payload 为事件 JSON 字符串，不是已渲染的聊天消息；真实对话能力暂缓。
@@ -209,11 +209,11 @@ JSON 中 sessionId、topicId、userId、message 均必填。使用 Topic 详情�
 
 ```bash
 TOPIC_SESSION_ID=$(curl --noproxy '*' --fail-with-body -sS \
-  "$EIKO_API/api/topics/$TOPIC_ID" | jq -r '.result.sessionId')
+  "$FANTO_API/api/topics/$TOPIC_ID" | jq -r '.result.sessionId')
 AGENT_BODY=$(jq -n --arg sessionId "$TOPIC_SESSION_ID" --arg topicId "$TOPIC_ID" \
-  --arg userId "$EIKO_USER_ID" --arg message '帮我梳理这个话题中尚未解决的问题。' \
+  --arg userId "$FANTO_USER_ID" --arg message '帮我梳理这个话题中尚未解决的问题。' \
   '{sessionId:$sessionId,topicId:$topicId,userId:$userId,message:$message}')
-curl --noproxy '*' --fail-with-body -sS -N "$EIKO_API/api/agent/stream" \
+curl --noproxy '*' --fail-with-body -sS -N "$FANTO_API/api/agent/stream" \
   -H 'Content-Type: application/json' -H 'Accept: text/event-stream' \
   --data-raw "$AGENT_BODY"
 ```
@@ -225,8 +225,8 @@ curl --noproxy '*' --fail-with-body -sS -N "$EIKO_API/api/agent/stream" \
 同步等待整理完成；处理当前用户 pending、updated、skipped 记录，一次最多 30 条。JSON 的 userId 优先于请求头，默认 default-user。
 
 ```bash
-curl --noproxy '*' --fail-with-body -sS "$EIKO_API/api/contemplate" \
-  -H "x-user-id: $EIKO_USER_ID" -H 'Content-Type: application/json' \
+curl --noproxy '*' --fail-with-body -sS "$FANTO_API/api/contemplate" \
+  -H "x-user-id: $FANTO_USER_ID" -H 'Content-Type: application/json' \
   --data-raw '{}'
 ```
 
@@ -237,8 +237,8 @@ curl --noproxy '*' --fail-with-body -sS "$EIKO_API/api/contemplate" \
 可选 limit，默认 20，按任务 updatedAt 倒序，无游标。当前仓库查询按用户返回任务，不额外过滤任务类型。
 
 ```bash
-curl --noproxy '*' --fail-with-body -sS --get "$EIKO_API/api/contemplate/tasks" \
-  -H "x-user-id: $EIKO_USER_ID" --data-urlencode 'limit=20'
+curl --noproxy '*' --fail-with-body -sS --get "$FANTO_API/api/contemplate/tasks" \
+  -H "x-user-id: $FANTO_USER_ID" --data-urlencode 'limit=20'
 ```
 
 result 为 Task 数组，包含 id、type、status、input、result、error、createdAt、updatedAt。
@@ -246,8 +246,8 @@ result 为 Task 数组，包含 id、type、status、input、result、error、cr
 ## GET /api/contemplate/:id
 
 ```bash
-curl --noproxy '*' --fail-with-body -sS "$EIKO_API/api/contemplate/$TASK_ID" \
-  -H "x-user-id: $EIKO_USER_ID"
+curl --noproxy '*' --fail-with-body -sS "$FANTO_API/api/contemplate/$TASK_ID" \
+  -H "x-user-id: $FANTO_USER_ID"
 ```
 
 不存在或用户不匹配返回 404/NOT_FOUND。成功时 result 是 Task；result.result 中可检查 workflowVersion、planningAttempts、plan、validation、execution、rewrites、skipped。planningAttempts 保存每次规划完整输出和诊断。
@@ -257,8 +257,8 @@ curl --noproxy '*' --fail-with-body -sS "$EIKO_API/api/contemplate/$TASK_ID" \
 兼容入口，运行与 /api/contemplate 相同的工作流，选择其中一个触发即可。
 
 ```bash
-curl --noproxy '*' --fail-with-body -sS "$EIKO_API/api/digest" \
-  -H "x-user-id: $EIKO_USER_ID" -H 'Content-Type: application/json' \
+curl --noproxy '*' --fail-with-body -sS "$FANTO_API/api/digest" \
+  -H "x-user-id: $FANTO_USER_ID" -H 'Content-Type: application/json' \
   --data-raw '{}'
 ```
 

@@ -21,7 +21,7 @@ export function buildContemplatePrompt(records: Record[], topics: Topic[], taskI
     })), null, 2)
     : "（暂无 Topic）";
 
-  return `你正在执行 Eiko 的 Record 沉思整理任务。任务分三个阶段：Plan → Execute → Verify。
+  return `你正在执行 Fanto 的 Record 沉思整理任务。任务分三个阶段：Plan → Execute → Verify。
 
 工具：
 - rag_search(scope, query): 通过向量搜索相关 topic 或 record

@@ -1,5 +1,5 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import type { RecordDto, RecordReadDto, TopicDto } from '@eiko/shared';
+import type { RecordDto, RecordReadDto, TopicDto } from '@fanto/shared';
 import { USER_ID } from './model';
 
 export class ApiError extends Error {

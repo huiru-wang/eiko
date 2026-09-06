@@ -11,7 +11,7 @@
 
 ### 1.1 根目录配置文件
 
-在 `eiko/` 根目录创建：
+在 `fanto/` 根目录创建：
 
 **`pnpm-workspace.yaml`**
 ```yaml
@@ -23,12 +23,12 @@ packages:
 **`package.json`**
 ```jsonc
 {
-  "name": "eiko",
+  "name": "fanto",
   "private": true,
   "packageManager": "pnpm@10.11.0",
   "scripts": {
-    "dev:server": "pnpm --filter @eiko/server start",
-    "dev:frontend": "pnpm --filter @eiko/h5 dev",
+    "dev:server": "pnpm --filter @fanto/server start",
+    "dev:frontend": "pnpm --filter @fanto/h5 dev",
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test"
   }
@@ -92,7 +92,7 @@ trim_trailing_whitespace = true
 **`packages/shared/package.json`**
 ```jsonc
 {
-  "name": "@eiko/shared",
+  "name": "@fanto/shared",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -205,7 +205,7 @@ export const TOPIC_STATUS = { ACTIVE: 'active', ARCHIVED: 'archived' } as const;
 **`apps/server/`** -- 仅创建目录结构和占位 package.json：
 ```text
 apps/server/
-├── package.json       # name: @eiko/server（仅 name + version + private）
+├── package.json       # name: @fanto/server（仅 name + version + private）
 ├── tsconfig.json      # extends base
 └── src/               # 空目录
 ```
@@ -213,7 +213,7 @@ apps/server/
 **`apps/h5/`** -- 独立 H5 工程：
 ```text
 apps/h5/
-├── package.json       # name: @eiko/h5
+├── package.json       # name: @fanto/h5
 ├── tsconfig.json      # extends base
 └── src/
 ```

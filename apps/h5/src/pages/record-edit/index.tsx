@@ -2,7 +2,7 @@ import { useRouter } from '../../lib/router';
 import { useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Check } from 'lucide-react';
-import type { RecordReadDto } from '@eiko/shared';
+import type { RecordReadDto } from '@fanto/shared';
 import { Layout, Loading, ErrorNotice, back } from '../../components/layout';
 import { updateRecord, useRecord } from '../../lib/api';
 import { readStorage, writeStorage } from '../../lib/state';

@@ -1,4 +1,4 @@
-# Eiko 前端 MVP 实施任务
+# Fanto 前端 MVP 实施任务
 
 对应方案：[frontend-mvp-design.md](frontend-mvp-design.md)。交付目标：浏览器 H5 优先，小程序后续适配；F01-F08 已完成实现与隔离验证。
 

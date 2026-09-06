@@ -1,5 +1,5 @@
 {
-  "name": "@eiko/h5",
+  "name": "@fanto/h5",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -11,7 +11,7 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "@eiko/shared": "workspace:*",
+    "@fanto/shared": "workspace:*",
     "@tanstack/react-query": "^5.90.0",
     "lucide-react": "^0.468.0",
     "react": "^18.3.1",

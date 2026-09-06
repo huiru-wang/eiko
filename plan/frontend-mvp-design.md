@@ -1,4 +1,4 @@
-# Eiko 前端 MVP 工程方案
+# Fanto 前端 MVP 工程方案
 
 日期：2026-09-05。状态：H5 MVP 已实施；P0 后端读接口已完成，小程序待适配。
 
@@ -196,7 +196,7 @@ B1/B2 直接联调现有接口。不得扫描所有 Topic 的记录反推归属�
 | pnpm build:h5 | 构建 H5 静态产物到 apps/frontend/dist/h5 | 已实现 |
 | pnpm dev:weapp / build:weapp | 小程序编译/监听 | 后续小程序阶段配置验收 |
 
-apps/frontend 提供同名脚本，根目录通过 pnpm --filter @eiko/frontend 转发。现有 dev:frontend 不再指向未实现的小程序启动入口，应调整为 H5 开发命令的别名。
+apps/frontend 提供同名脚本，根目录通过 pnpm --filter @fanto/frontend 转发。现有 dev:frontend 不再指向未实现的小程序启动入口，应调整为 H5 开发命令的别名。
 
 实现后在两个终端分别启动：
 

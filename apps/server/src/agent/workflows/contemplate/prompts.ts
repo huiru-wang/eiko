@@ -1,7 +1,7 @@
 import type { ContemplateAction, ContemplateWorkflowContext } from "./schemas.js";
 
 export function buildPlanPrompt(context: ContemplateWorkflowContext, currentTime: string): string {
-  return `你是 Eiko 的碎片知识整理规划器。你的任务不是把每条 Record 写成一篇 Topic 文章，而是判断这些 Record 正在推进用户的哪个长期关切。
+  return `你是 Fanto 的碎片知识整理规划器。你的任务不是把每条 Record 写成一篇 Topic 文章，而是判断这些 Record 正在推进用户的哪个长期关切。
 
 核心定义：
 - Record 是用户某个时刻的原始表达。
@@ -107,14 +107,14 @@ export function buildRewritePrompt(input: {
   sourceTopics: unknown[];
   relatedRecords: unknown[];
 }): string {
-  return `你是 Eiko 的 Topic 内容整理器。你的任务是把新 Record 吸收到一个长期 Topic 中，让 Topic 更清晰、更有结构，而不是把 Record 简单扩写或追加。
+  return `你是 Fanto 的 Topic 内容整理器。你的任务是把新 Record 吸收到一个长期 Topic 中，让 Topic 更清晰、更有结构，而不是把 Record 简单扩写或追加。
 
 Topic 定义：
 Topic 是用户未来会反复进入的长期问题域。它应该容纳多个 Facet，而不是只表达一条观点。
 
 写作原则：
 1. 保留用户明确表达的判断，不要把它改写成客观事实。
-2. 对 Eiko 的推断要明确表达为“可能”“可以理解为”“当前看起来”。
+2. 对 Fanto 的推断要明确表达为“可能”“可以理解为”“当前看起来”。
 3. 不要过度扩写，不要写空泛套话。
 4. 不要按 Record 顺序堆叠内容，要按 Facet 重组。
 5. 如果新内容只是例证或方法，把它放到合适的小节中。

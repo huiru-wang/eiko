@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from '../../lib/router';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import type { RecordReadDto } from '@eiko/shared';
+import type { RecordReadDto } from '@fanto/shared';
 import { Layout, ErrorNotice, Loading, More } from '../../components/layout';
 import { RelatedRecordRow } from '../../components/records';
 import { useTopic, useList } from '../../lib/api';

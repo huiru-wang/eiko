@@ -9,7 +9,7 @@ export function Layout({ active, title, subtitle, headerMeta, children, detail =
   return <div className="workspace">
     <main className={`main ${active === 'capture' ? 'capture-main' : ''} ${detail ? 'detail-main' : ''}`}>
       {showBack && <div className="detail-nav"><button className="icon-button" aria-label="返回" onClick={() => back(active)}><ArrowLeft size={21} /></button><span>{active === 'topics' ? '回声' : '记录'}</span></div>}
-      <header className={`page-header ${detail ? 'detail-page-header' : 'primary-page-header'}`}><div><h1>{title}</h1>{subtitle && <p className="muted">{subtitle}</p>}{headerMeta}</div>{active === 'capture' && <span className="wordmark">eiko<span className="brand-dot">.</span></span>}</header>
+      <header className={`page-header ${detail ? 'detail-page-header' : 'primary-page-header'}`}><div><h1>{title}</h1>{subtitle && <p className="muted">{subtitle}</p>}{headerMeta}</div>{active === 'capture' && <span className="wordmark">fanto<span className="brand-dot">.</span></span>}</header>
       {children}
     </main>
     <nav className="bottom-nav" aria-label="主导航">{([['capture', '捕获', Feather], ['records', '记录', Layers], ['topics', '回声', AudioLines]] as const).map(([page, label, Icon]) => <button key={page} className={`nav-item ${active === page ? 'active' : ''}`} aria-current={active === page ? 'page' : undefined} onClick={() => go(page)}><Icon size={21} strokeWidth={1.6} /><span>{label}</span>{page === 'topics' && organizing && <i className="running-dot" />}</button>)}</nav>

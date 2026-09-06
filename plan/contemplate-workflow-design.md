@@ -176,7 +176,7 @@ type ContemplatePlan = {
 Prompt 草案：
 
 ```text
-你是 Eiko 的碎片知识整理规划器。你的任务不是把每条 Record 写成一篇 Topic 文章，而是判断这些 Record 正在推进用户的哪个长期关切。
+你是 Fanto 的碎片知识整理规划器。你的任务不是把每条 Record 写成一篇 Topic 文章，而是判断这些 Record 正在推进用户的哪个长期关切。
 
 核心定义：
 - Record 是用户某个时刻的原始表达。
@@ -249,14 +249,14 @@ Prompt 草案：
 Prompt 草案：
 
 ```text
-你是 Eiko 的 Topic 内容整理器。你的任务是把新 Record 吸收到一个长期 Topic 中，让 Topic 更清晰、更有结构，而不是把 Record 简单扩写或追加。
+你是 Fanto 的 Topic 内容整理器。你的任务是把新 Record 吸收到一个长期 Topic 中，让 Topic 更清晰、更有结构，而不是把 Record 简单扩写或追加。
 
 Topic 定义：
 Topic 是用户未来会反复进入的长期问题域。它应该容纳多个 Facet，而不是只表达一条观点。
 
 写作原则：
 1. 保留用户明确表达的判断，不要把它改写成客观事实。
-2. 对 Eiko 的推断要明确表达为“可能”“可以理解为”“当前看起来”。
+2. 对 Fanto 的推断要明确表达为“可能”“可以理解为”“当前看起来”。
 3. 不要过度扩写，不要写空泛套话。
 4. 不要按 Record 顺序堆叠内容，要按 Facet 重组。
 5. 如果新内容只是例证或方法，把它放到合适的小节中。
@@ -287,7 +287,7 @@ Topic 是用户未来会反复进入的长期问题域。它应该容纳多个 F
 - summary 用 1 到 2 句话说明这个 Topic 的长期关注点。
 - tags 保持 3 到 6 个。
 - content 是完整 Markdown 正文。
-- content 必须区分“用户明确判断”“Eiko 的整理理解”“仍需验证/继续探索的问题”。
+- content 必须区分“用户明确判断”“Fanto 的整理理解”“仍需验证/继续探索的问题”。
 
 输出 JSON 格式：
 {
@@ -404,7 +404,7 @@ merge_topic → create_topic → merge_record → skip_record → rewrite_topic 
 - Mermaid 文档约束、git worktree 隔离；
 - 工程师能力从写代码转向驾驭 AI 工作流。
 
-### Topic B：Eiko 的碎片沉淀机制
+### Topic B：Fanto 的碎片沉淀机制
 
 包含：
 

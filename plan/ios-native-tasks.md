@@ -1,10 +1,10 @@
-# Eiko 原生 iOS 实施任务
+# Fanto 原生 iOS 实施任务
 
 关联方案：[iOS 原生工程方案](ios-native-plan.md)。任务按依赖顺序排列；完成每项后更新状态与验收证据。
 
 ## P0：工程与契约
 
-- [ ] 1. 创建 `apps/ios/Eiko.xcodeproj`，配置 iOS 17 部署目标、Debug/Staging/Release schemes 与 `.xcconfig`。
+- [ ] 1. 创建 `apps/ios/Fanto.xcodeproj`，配置 iOS 17 部署目标、Debug/Staging/Release schemes 与 `.xcconfig`。
   - 验收：模拟器能启动空壳 App；三套配置不包含生产密钥。
 - [ ] 2. 建立 APIClient、Codable DTO、错误模型和 Mock APIClient，逐项映射 [HTTP API](../docs/api/http-api.md)。
   - 验收：Record、Topic、游标和错误响应的单元测试通过。

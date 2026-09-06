@@ -428,7 +428,7 @@ src/agent/tools/
 ### 5.2 Prompt 结构
 
 ```
-[SYSTEM_PROMPT — Eiko 角色定义，不变]
+[SYSTEM_PROMPT — Fanto 角色定义，不变]
 
 [任务说明]
 你正在执行 Record 沉思整理任务。任务分三个阶段：Plan → Execute → Verify。
@@ -695,7 +695,7 @@ pnpm db:migrate
 pnpm start
 ```
 
-持久化位置由 `SQLITE_PATH` 决定，例如默认 `../../data/eiko.sqlite`。`sqlite-vec` 只提供向量表和搜索能力，不单独保存数据。
+持久化位置由 `SQLITE_PATH` 决定，例如默认 `../../data/fanto.sqlite`。`sqlite-vec` 只提供向量表和搜索能力，不单独保存数据。
 
 ---
 

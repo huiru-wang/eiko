@@ -33,7 +33,7 @@
 
 - 独立 H5 前端位于 apps/h5，使用 Vite + React + TypeScript。未来原生小程序、Android、iOS 可在 apps 下独立建设，不要求共用 UI 或构建链路。
 - 根目录 `pnpm dev` 只启动后端；`pnpm dev:h5` 启动独立 H5（默认 5174），`pnpm build:h5` 输出到 apps/h5/dist。
-- apps/h5 只复用 @eiko/shared 接口契约；UI 遵循 docs/frontend/product-interactive-demo.html 的纸白底色、绿色点缀和底部三栏导航。
+- apps/h5 只复用 @fanto/shared 接口契约；UI 遵循 docs/frontend/product-interactive-demo.html 的纸白底色、绿色点缀和底部三栏导航。
 - H5 请求使用相对 `/api` 并由开发服务器代理到后端。前端固定开发用户不是正式认证，禁止在浏览器中放置模型密钥。
 - Topic Markdown 使用 markdown-it 解析和 DOMPurify 清洗。真实 Topic 对话、录音、反馈、Record tag 和标签管理仍不实现。
 - 浏览器自动化必须使用模拟或隔离 API，不得触发真实整理任务或修改用户数据库。

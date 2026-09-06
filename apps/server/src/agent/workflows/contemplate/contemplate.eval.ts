@@ -15,7 +15,7 @@ import { runContemplateWorkflow } from "./contemplate.workflow.js";
 loadEnv();
 const config = loadConfig();
 const source = new Database(resolve(config.sqlitePath), { readonly: true });
-const directory = await mkdtemp(join(tmpdir(), "eiko-contemplate-eval-"));
+const directory = await mkdtemp(join(tmpdir(), "fanto-contemplate-eval-"));
 const baseline = join(directory, "baseline.sqlite");
 try { await source.backup(baseline); } finally { source.close(); }
 console.log("Evaluation directory:", directory);

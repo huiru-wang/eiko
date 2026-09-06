@@ -1,5 +1,5 @@
 import { ArrowUpRight } from 'lucide-react';
-import type { TopicDto } from '@eiko/shared';
+import type { TopicDto } from '@fanto/shared';
 import { Layout, ErrorNotice, Loading, More, go } from '../../components/layout';
 import { useList } from '../../lib/api';
 import { uniqueItems, organization, formatTime } from '../../lib/model';

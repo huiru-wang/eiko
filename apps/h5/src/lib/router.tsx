@@ -13,8 +13,8 @@ export function useRouter() {
   const [path, search = ''] = hash.replace(/^#\/?/, '').split('?');
   return { page: path || 'capture', params: { id: new URLSearchParams(search).get('id') || '' } };
 }
-export function go(page: string, id?: string) { const hash = `#/${page}${id ? `?id=${encodeURIComponent(id)}` : ''}`; if (window.location.hash === hash) return; window.history.pushState({ eiko: true }, '', hash); window.dispatchEvent(new HashChangeEvent('hashchange')); window.scrollTo(0, 0); }
-export function back(fallback: string) { if (window.history.state?.eiko) window.history.back(); else go(fallback); }
+export function go(page: string, id?: string) { const hash = `#/${page}${id ? `?id=${encodeURIComponent(id)}` : ''}`; if (window.location.hash === hash) return; window.history.pushState({ fanto: true }, '', hash); window.dispatchEvent(new HashChangeEvent('hashchange')); window.scrollTo(0, 0); }
+export function back(fallback: string) { if (window.history.state?.fanto) window.history.back(); else go(fallback); }
 export function Routes() {
   const { page, params } = useRouter();
   const Page = Object.hasOwn(pages, page) ? pages[page as keyof typeof pages] : undefined;

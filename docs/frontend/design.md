@@ -2,7 +2,7 @@
 
 ## 独立 H5：apps/h5
 
-当前 H5 工程使用 Vite + React + TypeScript。后续可在 apps/weapp、apps/android、apps/ios 建设原生客户端，共享内容仅为 @eiko/shared 中的接口契约。
+当前 H5 工程使用 Vite + React + TypeScript。后续可在 apps/weapp、apps/android、apps/ios 建设原生客户端，共享内容仅为 @fanto/shared 中的接口契约。
 
 ### 页面和视觉
 
@@ -38,9 +38,9 @@ pnpm build:h5   # apps/h5/dist
 ### 验证
 
 ```bash
-pnpm --filter @eiko/h5 typecheck
-pnpm --filter @eiko/h5 test
-pnpm --filter @eiko/h5 test:e2e
+pnpm --filter @fanto/h5 typecheck
+pnpm --filter @fanto/h5 test
+pnpm --filter @fanto/h5 test:e2e
 ```
 
 浏览器测试自动启动 5184 端口的独立 Vite 服务，并拦截全部 /api 请求，覆盖桌面和手机尺寸的捕获、分页、状态、关联跳转、编辑、失败恢复与 Markdown 安全渲染。需要本机 Chrome。测试不连接用户数据库、不调用真实模型。
