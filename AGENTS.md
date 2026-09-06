@@ -37,3 +37,9 @@
 - H5 请求使用相对 `/api` 并由开发服务器代理到后端。前端固定开发用户不是正式认证，禁止在浏览器中放置模型密钥。
 - Topic Markdown 使用 markdown-it 解析和 DOMPurify 清洗。真实 Topic 对话、录音、反馈、Record tag 和标签管理仍不实现。
 - 浏览器自动化必须使用模拟或隔离 API，不得触发真实整理任务或修改用户数据库。
+
+## iOS 底部交互层
+
+- 当前 iOS 只读版只包含“记录 / 回声”两项原生 `TabView` 导航；禁止实现加号、创建入口、候选菜单、底栏 overlay 或自定义抽屉。
+- 部署目标为 iOS 17；iOS 26 的 Liquid Glass 仅由系统 tab bar 自动提供，不覆盖系统 tab bar 的背景、尺寸、动画或命中区域。
+- 页面内需要呈现内容时，使用各 tab 独立的 `NavigationStack`；不使用透明全屏点击层。
